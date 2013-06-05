@@ -1,0 +1,19 @@
+{
+    "name": "rb-cohen/jzform",
+    "description": "A javascript form library populated by Zend Form",
+    "require": {
+        "zendframework/zendframework": "2.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "JzForm\\": "src/",
+            "JzFormTest\\": "tests/php"
+        }
+    },
+    "authors": [
+        {
+            "name": "Arron Woods",
+            "email": "me@arronwoods.com"
+        }
+    ]
+}
