@@ -3,84 +3,44 @@
 namespace JzForm\Render\Json;
 
 use JzForm\Render\Exception;
+use JzForm\Render\FilterMap;
+use JzForm\Render\ValidatorMap;
 use Zend\Form\ElementInterface;
 use Zend\InputFilter\InputProviderInterface;
-use Zend\InputFilter\InputFilterInterface;
+use Zend\InputFilter\InputFilter as ZfInputFilter;
+use Zend\Filter\FilterInterface;
+use Zend\Validator\ValidatorInterface;
 
 class Element extends RenderAbstract {
 
     public function render(ElementInterface $element) {
-        $data = array(
+        $elementData = array(
             'type' => $element->getAttribute('type'),
             'name' => $element->getName(),
             'label' => $element->getLabel(),
+            'value' => $element->getValue(),
             'attributes' => $this->renderAttributes($element, array('name', 'type')),
-            'spec' => array(
-                'filters' => $this->getFilters($element),
-                'validators' => $this->getValidators($element),
-            )
         );
 
-        return $data;
+        $specData = $this->getSpec($element);
+
+        return array_merge($elementData, $specData);
     }
 
-    public function getFilters(ElementInterface $element) {
+    public function getSpec(ElementInterface $element) {
         if ($element instanceof InputProviderInterface) {
-            $spec = $element->getInputSpecification();
-            return array_map(array($this, 'buildFilter'), $spec['filters']);
+            $inputFilter = new ZfInputFilter();
+            $inputFilter->add($element->getInputSpecification());
+
+            $inputFilterRender = new InputFilter();
+            $data = $inputFilterRender->render($inputFilter);
+            return $data[$element->getName()];
         }
 
-        return array();
-    }
-
-    public function getValidators(ElementInterface $element) {
-        if ($element instanceof InputProviderInterface) {
-            $spec = $element->getInputSpecification();
-
-            if ($spec['required']) {
-                array_push($spec['validators'], array(
-                    'name' => 'Required',
-                ));
-            }
-
-            return array_map(array($this, 'buildValidator'), $spec['validators']);
-        }
-
-        return array();
-    }
-
-    public function buildFilter($filter) {
-        switch (true) {
-            case ($filter instanceof InputFilterInterface):
-                return array(
-                    'name' => get_class($filter),
-                );
-            case is_string($filter):
-                return array(
-                    'name' => $filter,
-                );
-            case is_array($filter):
-                return $filter;
-            default:
-                throw new Exception('Invalid filter');
-        }
-    }
-
-    public function buildValidator($validator) {
-        switch (true) {
-            case ($validator instanceof \Zend\Validator\ValidatorInterface):
-                return array(
-                    'name' => get_class($validator),
-                );
-            case is_string($validator):
-                return array(
-                    'name' => $validator,
-                );
-            case is_array($validator):
-                return $validator;
-            default:
-                throw new Exception('Invalid validator');
-        }
+        return array(
+            'filters' => array(),
+            'validators' => array(),
+        );
     }
 
 }
