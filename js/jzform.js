@@ -5,7 +5,7 @@ define([
 ], function(_, $, Backbone) {
     var jzFormElement = function(element, params) {
         var defaults = {
-            basePath: ''
+            basePath: './'
         };
 
         this.$el = $(element);
@@ -26,7 +26,7 @@ define([
 
             this.filters = [];
             $.each(this.params.filters, function(index, params) {
-                var name = that.params.basePath + 'filter/' + params.name;
+                var name = that.params.basePath + 'filter/' + params.name + '.js';
                 require([name], function(Filter) {
                     var filter = new Filter(params.options);
                     that.filters.push(filter);
@@ -38,7 +38,7 @@ define([
 
             this.validators = [];
             $.each(this.params.validators, function(index, params) {
-                var name = that.params.basePath + 'validator/' + params.name;
+                var name = that.params.basePath + 'validator/' + params.name + '.js';
                 require([name], function(Validator) {
                     var validator = new Validator(params.options, params.messages);
                     that.validators.push(validator);
