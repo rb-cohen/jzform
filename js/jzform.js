@@ -149,6 +149,12 @@ define([
                 this.trigger.apply(this, args);
             }, this);
         },
+        validate: function() {
+            var isValid = this.isValid();
+            this.$el.toggleClass('invalid', !isValid);
+
+            return isValid;
+        },
         isValid: function() {
             var valid = true;
             var stopOnFirstError = this.params.stopOnFirstError;
@@ -166,7 +172,7 @@ define([
         submit: function(e) {
             this.trigger('before:submit');
 
-            if (this.isValid()) {
+            if (this.validate()) {
                 this.trigger('submit');
             } else {
                 e.preventDefault();
