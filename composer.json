@@ -1,6 +1,7 @@
 {
     "name": "rb-cohen/jzform",
     "description": "A javascript form library populated by Zend Form",
+    "license": "BSD-3-Clause",
     "require": {
         "zendframework/zendframework": "2.*"
     },
