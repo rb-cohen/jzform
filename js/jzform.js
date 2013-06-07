@@ -145,7 +145,6 @@ define([
         },
         bindEvents: function() {
             var that = this;
-            console.log('bind', this.$el);
             this.$el.bind('submit', function(e) {
                 that.submit.call(that, e);
             });
