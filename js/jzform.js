@@ -68,6 +68,10 @@ define([
             return isValid;
         },
         renderMessages: function() {
+            if (!this.params.renderMessages) {
+                return;
+            }
+
             var target = this.getTarget();
             var messages = target.find('.messages');
             if (messages.length === 0) {
@@ -103,7 +107,10 @@ define([
 
     var jzForm = function(element, params) {
         var defaults = {
-            stopOnFirstError: false
+            stopOnFirstError: false,
+            element: {
+                renderMessages: true
+            }
         };
 
         this.$el = $(element);
@@ -121,8 +128,9 @@ define([
             var that = this;
             $.each(this.params.form.elements, function(name, params) {
                 var $element = that.$el.find('*[name="' + name + '"]');
-                var element = that.elements[name] = new jzFormElement($element, params);
+                var options = $.extend(that.params.element, params);
 
+                var element = that.elements[name] = new jzFormElement($element, options);
                 that.listenToElementEvents.call(that, element);
             });
         },
