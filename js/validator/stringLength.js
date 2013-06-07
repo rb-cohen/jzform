@@ -1,5 +1,5 @@
 define([
-    'validator/validator'
+    './validator.js'
 ], function(Validator) {
     var StringLength = function(params, messageTemplates) {
         this.params = params;

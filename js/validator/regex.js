@@ -1,5 +1,5 @@
 define([
-    'validator/validator'
+    './validator.js'
 ], function(Validator) {
     var Regex = function(params, messageTemplates) {
         this.params = params;

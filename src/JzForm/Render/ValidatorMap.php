@@ -9,8 +9,15 @@ class ValidatorMap {
     public $names = array(
         'Zend\\Validator\\Regex' => 'regex',
         'Zend\\Validator\\StringLength' => 'stringLength',
+        'Zend\\Validator\\EmailAddress' => 'regex',
+        'Zend\\Validator\\Identical' => 'matchElement',
     );
     public $options = array(
+        'matchElement' => array(
+            'methods' => array(
+                'token' => 'getToken'
+            ),
+        ),
         'regex' => array(
             'methods' => array(
                 'pattern' => 'getPattern'

@@ -1,5 +1,5 @@
 define([
-    'filter/filter'
+    './filter.js'
 ], function(Filter) {
     var StringTrim = Filter;
 

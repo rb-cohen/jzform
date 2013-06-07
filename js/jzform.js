@@ -1,13 +1,14 @@
 define([
+    'require',
     'underscore',
     'jquery',
     'backbone'
-], function(_, $, Backbone) {
-    var jzFormElement = function(element, params) {
+], function(require, _, $, Backbone) {
+    var jzFormElement = function(form, element, params) {
         var defaults = {
-            basePath: './'
         };
 
+        this.form = form;
         this.$el = $(element);
         this.params = $.extend(defaults, params);
         this.initialize();
@@ -26,8 +27,10 @@ define([
 
             this.filters = [];
             $.each(this.params.filters, function(index, params) {
-                var name = that.params.basePath + 'filter/' + params.name + '.js';
-                require([name], function(Filter) {
+                var name = './filter/' + params.name + '.js';
+                var url = require.toUrl(name);
+
+                require([url], function(Filter) {
                     var filter = new Filter(params.options);
                     that.filters.push(filter);
                 });
@@ -38,8 +41,10 @@ define([
 
             this.validators = [];
             $.each(this.params.validators, function(index, params) {
-                var name = that.params.basePath + 'validator/' + params.name + '.js';
-                require([name], function(Validator) {
+                var name = './validator/' + params.name + '.js';
+                var url = require.toUrl(name);
+
+                require([url], function(Validator) {
                     var validator = new Validator(params.options, params.messages);
                     that.validators.push(validator);
                 });
@@ -95,7 +100,7 @@ define([
 
             var that = this;
             $.each(this.validators, function(index, validator) {
-                valid = (valid && validator.isValid(currentValue));
+                valid = (valid && validator.isValid(currentValue, that.form));
 
                 if (!valid && validator.message) {
                     that.messages.push(validator.message);
@@ -134,12 +139,13 @@ define([
                 var $element = that.$el.find('*[name="' + name + '"]');
                 var options = $.extend(that.params.element, params);
 
-                var element = that.elements[name] = new jzFormElement($element, options);
+                var element = that.elements[name] = new jzFormElement(that, $element, options);
                 that.listenToElementEvents.call(that, element);
             });
         },
         bindEvents: function() {
             var that = this;
+            console.log('bind', this.$el);
             this.$el.bind('submit', function(e) {
                 that.submit.call(that, e);
             });
@@ -152,6 +158,14 @@ define([
                 args.unshift('element:' + name);
                 this.trigger.apply(this, args);
             }, this);
+        },
+        getValues: function() {
+            var values = {};
+            $.each(this.elements, function(name, element) {
+                values[name] = element.$el.val();
+            });
+
+            return values;
         },
         validate: function() {
             var isValid = this.isValid();
@@ -177,7 +191,8 @@ define([
             this.trigger('before:submit');
 
             if (this.validate()) {
-                this.trigger('submit');
+                var data = this.getValues();
+                this.trigger('submit', e, data);
             } else {
                 e.preventDefault();
             }
