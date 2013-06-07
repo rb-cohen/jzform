@@ -9,6 +9,10 @@ use Zend\Form\Element\Submit;
 class SimpleForm extends Form {
 
     public function prepare() {
+        if ($this->isPrepared) {
+            return $this;
+        }
+
         $email = new Email('email');
         $email->setLabel('Email');
 
@@ -22,7 +26,7 @@ class SimpleForm extends Form {
                 ->add($password)
                 ->add($submit);
 
-        return $this;
+        return parent::prepare();
     }
 
 }

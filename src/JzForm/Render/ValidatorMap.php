@@ -7,16 +7,16 @@ use Zend\Validator\ValidatorInterface;
 class ValidatorMap {
 
     public $names = array(
-        'Zend\\Validator\\Regex' => 'Regex',
-        'Zend\\Validator\\StringLength' => 'StringLength',
+        'Zend\\Validator\\Regex' => 'regex',
+        'Zend\\Validator\\StringLength' => 'stringLength',
     );
     public $options = array(
-        'Regex' => array(
+        'regex' => array(
             'methods' => array(
                 'pattern' => 'getPattern'
             ),
         ),
-        'StringLength' => array(
+        'stringLength' => array(
             'methods' => array(
                 'min' => 'getMin',
                 'max' => 'getMax',
@@ -42,6 +42,15 @@ class ValidatorMap {
             }
 
             return $data;
+        }
+
+        return array();
+    }
+
+    public function mapMessages($validator) {
+        $name = $this->getName($validator);
+        if ($validator instanceof ValidatorInterface) {
+            return $validator->getMessageTemplates();
         }
 
         return array();

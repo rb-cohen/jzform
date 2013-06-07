@@ -7,7 +7,7 @@ use Zend\Filter\FilterInterface;
 class FilterMap {
 
     public $names = array(
-        'Zend\\Filter\\StringTrim' => 'StringTrim',
+        'Zend\\Filter\\StringTrim' => 'stringTrim',
     );
     public $options = array(
     );

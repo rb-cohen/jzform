@@ -2,7 +2,7 @@
 
 use JzForm\Render\Json\Form as JsonForm;
 
-require('autoloader.php');
+require_once('autoloader.php');
 
 $form = require('forms/simple.php');
 $filter = require('filters/simple.php');

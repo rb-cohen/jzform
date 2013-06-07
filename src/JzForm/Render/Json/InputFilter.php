@@ -68,6 +68,7 @@ class InputFilter extends RenderAbstract {
                 return array(
                     'name' => $map->mapName($validator),
                     'options' => $map->mapOptions($validator),
+                    'messages' => $map->mapMessages($validator),
                 );
             case is_array($validator) && array_key_exists('name', $validator):
                 $validator['name'] = $map->mapName($validator['name']);
