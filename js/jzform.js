@@ -42,6 +42,7 @@ define([
             $.each(this.params.validators, function(index, params) {
                 var name = './validator/' + params.name + '.js';
                 var url = require.toUrl(name);
+                params.options.element = that;
 
                 require([url], function(Validator) {
                     var validator = new Validator(params.options, params.messages);
@@ -69,6 +70,7 @@ define([
                 var that = this;
                 input.bind('focus blur change keydown keyup paste', function(e) {
                     that.trigger(e.type, e);
+                    that.form.trigger(e.type + ':' + that.params.name);
                 });
 
                 this.on('change', this.filter, this);
