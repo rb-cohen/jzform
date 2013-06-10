@@ -1,23 +1,17 @@
 <?php
 
-use Zend\View\Renderer\PhpRenderer;
-use Zend\Form\View\Helper\Form as FormHelper;
-use Zend\Form\View\HelperConfig as FormHelperConfig;
+use JzForm\Render\Html\Form as HtmlForm;
 use JzForm\Render\Json\Form as JsonForm;
 
 require_once(__DIR__ . '/../autoloader.php');
 $form = require_once(__DIR__ . '/../forms/simple.php');
 $filter = require(__DIR__ . '/../filters/simple.php');
 
-$render = new JsonForm();
-$json = $render->render($form, $filter);
+$renderJson = new JsonForm();
+$json = $renderJson->render($form, $filter);
 
-$view = new PhpRenderer;
-$formHelperConfig = new FormHelperConfig;
-$formHelperConfig->configureServiceManager($view->getHelperPluginManager());
-
-$formHelper = new FormHelper;
-$formHelper->setView($view);
+$renderHtml = new HtmlForm();
+$html = $renderHtml->render($form);
 ?>
 <html>
     <head>
@@ -47,7 +41,7 @@ $formHelper->setView($view);
         </script>
     </head>
     <body>
-        <?php echo $formHelper->render($form); ?>
+        <?php echo $html; ?>
 
         <script type="text/javascript">
             require(['jzform'], function(jzForm) {

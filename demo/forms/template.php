@@ -8,7 +8,7 @@ use Zend\Form\Element\Radio;
 use Zend\Form\Element\Submit;
 use JzForm\Element\TemplateCollection;
 
-class SimpleForm extends Form {
+class TemplateForm extends Form {
 
     public function prepare() {
         if ($this->isPrepared) {
@@ -19,7 +19,7 @@ class SimpleForm extends Form {
         $email->setLabel('Email');
 
         $password = new Password('password');
-        $password->setLabel('Password');
+        $password->setLabel('P2assword');
         
         $member = new Radio('memberOf');
         $member->setValueOptions(array(
@@ -46,4 +46,4 @@ class SimpleForm extends Form {
 
 }
 
-return new SimpleForm('simple-form');
+return new TemplateForm('template-form');
