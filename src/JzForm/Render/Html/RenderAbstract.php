@@ -4,7 +4,8 @@ namespace JzForm\Render\Html;
 
 use Zend\Form\ElementInterface;
 use Zend\View\Renderer\PhpRenderer;
-use Zend\Form\View\HelperConfig as FormHelperConfig;
+use Zend\Form\View\HelperConfig as ZendFormHelperConfig;
+use JzForm\View\HelperConfig as FormHelperConfig;
 
 class RenderAbstract {
 
@@ -37,6 +38,10 @@ class RenderAbstract {
     public function getRenderer() {
         if ($this->renderer === null) {
             $renderer = new PhpRenderer;
+
+            // register view helpers
+            $formHelperConfig = new ZendFormHelperConfig;
+            $formHelperConfig->configureServiceManager($renderer->getHelperPluginManager());
 
             // register view helpers
             $formHelperConfig = new FormHelperConfig;
