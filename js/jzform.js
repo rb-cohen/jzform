@@ -110,7 +110,7 @@ define([
             return valid;
         },
         getTarget: function() {
-            return this.$el.parent('label, fieldset');
+            return this.$el.parent('div.element, fieldset');
         }
     });
 
@@ -195,6 +195,24 @@ define([
             } else {
                 e.preventDefault();
             }
+        },
+        buildElementsFromCollection: function(fieldset, collection) {
+            var $fieldset = $(fieldset);
+            var template = $fieldset.find('span').attr('data-template');
+            template = template.replace(/\[__remove__\]/g, '');
+
+            collection.each(function(resource, index) {
+                var data = {
+                    index: index,
+                    model: resource.toJSON()
+                };
+
+                var html = _.template(template, data, {
+                    interpolate: /__(.+?)__/g
+                });
+
+                $fieldset.append(html);
+            });
         }
     });
 

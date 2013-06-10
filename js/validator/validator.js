@@ -16,7 +16,6 @@ define([
             this.message = message;
         },
         parseMessageTemplate: function(template, params) {
-            console.log(params);
             $.each(params, function(key, value) {
                 var regex = new RegExp('%' + key + '%', 'g');
                 template = template.replace(regex, value);

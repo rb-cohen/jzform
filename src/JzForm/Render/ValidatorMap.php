@@ -7,10 +7,11 @@ use Zend\Validator\ValidatorInterface;
 class ValidatorMap {
 
     public $names = array(
-        'Zend\\Validator\\Regex' => 'regex',
-        'Zend\\Validator\\StringLength' => 'stringLength',
         'Zend\\Validator\\EmailAddress' => 'regex',
         'Zend\\Validator\\Identical' => 'matchElement',
+        'Zend\\Validator\\NotEmpty' => 'notEmpty',
+        'Zend\\Validator\\Regex' => 'regex',
+        'Zend\\Validator\\StringLength' => 'stringLength',
     );
     public $options = array(
         'matchElement' => array(
