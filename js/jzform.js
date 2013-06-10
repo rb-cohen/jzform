@@ -118,6 +118,13 @@ define([
                 return (input) ? input.val() : '';
             }
         },
+        setValue: function(value) {
+            var input = this.getInput();
+            if (input) {
+                input.val(value);
+                this.filter();
+            }
+        },
         renderMessages: function() {
             if (!this.params.renderMessages) {
                 return;
@@ -259,6 +266,56 @@ define([
                 });
 
                 $fieldset.append(html);
+            });
+        },
+        bindModel: function(model) {
+            this.model = model;
+            this.bindModelPopulate(model);
+            this.bindModelSubmit(model);
+        },
+        bindModelPopulate: function(model) {
+            model.on('change', function() {
+                this.populate(model.toJSON());
+            }, this);
+
+            this.populate(model.toJSON());
+        },
+        bindModelSubmit: function(model) {
+            this.on('submit', function(e) {
+                e.preventDefault();
+                var that = this;
+
+                var isNew = model.isNew();
+                model.save(this.getValues(), {
+                    success: function() {
+                        if (isNew) {
+                            Copia.notice('success', 'Successfully created __model__', 10);
+                            that.reset();
+                        } else {
+                            Copia.notice('success', 'Successfully updated __model__', 10);
+                        }
+                    },
+                    error: function(model, fail) {
+                        var response = JSON.parse(fail.responseText);
+
+                        if (response['error-message']) {
+                            that.addMessage(response['error-message']);
+                            that.renderMessages();
+                        } else {
+                            Copia.notice('fail', 'Failed saving __model__');
+                            console.log('response', response);
+                        }
+                    }
+                });
+            }, this);
+        },
+        populate: function(data) {
+            var that = this;
+            $.each(data, function(key, value) {
+                var element = that.elements[key];
+                if (element) {
+                    element.setValue(value);
+                }
             });
         },
         renderMessages: function() {
