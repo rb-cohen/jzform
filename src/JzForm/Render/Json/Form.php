@@ -3,6 +3,7 @@
 namespace JzForm\Render\Json;
 
 use Zend\Form\FormInterface;
+use Zend\Form\FieldsetInterface;
 use Zend\Form\ElementInterface;
 use Zend\InputFilter\InputFilter as ZfInputFilter;
 
@@ -20,14 +21,26 @@ class Form extends RenderAbstract {
             )
         );
 
-        $filterData = ($inputFilter) ? $this->renderInputFilter($form, $inputFilter) : array();
-        return array_merge_recursive($formData, $filterData);
+        if ($inputFilter) {
+            $inputData = $this->renderInputFilter($form, $inputFilter);
+            foreach ($inputData as $name => $spec) {
+                $original = empty($formData['form']['elements'][$name]) ? array() : $formData['form']['elements'][$name];
+                $formData['form']['elements'][$name] = array_merge($original, $spec);
+            }
+        }
+
+        return $formData;
     }
 
-    public function renderElements(FormInterface $form) {
+    public function renderElements(FieldsetInterface $form) {
         $data = array();
-        foreach ($form->getElements() as $key => $value) {
-            $data[$key] = $this->renderElement($value);
+        foreach ($form as $element) {
+            if ($element instanceof FieldsetInterface) {
+                $elements = $this->renderElements($element);
+                $data = array_merge($data, $elements);
+            } else {
+                $data[$element->getName()] = $this->renderElement($element);
+            }
         }
 
         return $data;
@@ -44,10 +57,11 @@ class Form extends RenderAbstract {
         $filterRender = new InputFilter();
         $filterData = $filterRender->render($inputFilter);
 
-        foreach ($form->getElements() as $name => $element) {
+        foreach ($form as $element) {
+            $name = $element->getName();
             if (array_key_exists($name, $filterData)) {
                 $spec = $filterData[$name];
-                $data['form']['elements'][$name] = $spec;
+                $data[$name] = $spec;
             }
         }
 

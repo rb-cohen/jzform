@@ -19,6 +19,7 @@ class InputFilter extends RenderAbstract {
 
         foreach ($inputFilter->getInputs() as $key => $input) {
             $data[$key] = array(
+                'name' => $key,
                 'filters' => $this->getFilters($input),
                 'validators' => $this->getValidators($input),
             );
@@ -34,6 +35,10 @@ class InputFilter extends RenderAbstract {
 
     public function getValidators(ZfInput $input) {
         $validators = $input->getValidatorChain()->getValidators();
+        if ($input->isRequired()) {
+            $validators[] = 'Zend\\Validator\\NotEmpty';
+        }
+
         return array_map(array($this, 'buildValidator'), $validators);
     }
 

@@ -8,7 +8,7 @@ define([
 
     Validator.extend(NotEmpty.prototype, Validator, {
         isValid: function(value, context) {
-            if (value.length <= 0) {
+            if (!value || value.length <= 0) {
                 this.error('isEmpty');
                 return false;
             }

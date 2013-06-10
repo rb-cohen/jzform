@@ -8,8 +8,8 @@ define([
 
     Validator.extend(StringLength.prototype, Validator, {
         isValid: function(value) {
-            var tooShort = (value.length < this.params.min)
-            var tooLong = (value.length > this.params.max);
+            var tooShort = (!value || value.length < this.params.min)
+            var tooLong = (value && value.length > this.params.max);
 
             if (tooShort) {
                 this.error('stringLengthTooShort');

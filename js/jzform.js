@@ -4,12 +4,11 @@ define([
     'jquery',
     'backbone'
 ], function(require, _, $, Backbone) {
-    var jzFormElement = function(form, element, params) {
+    var jzFormElement = function(form, params) {
         var defaults = {
         };
 
         this.form = form;
-        this.$el = $(element);
         this.params = $.extend(defaults, params);
         this.initialize();
     };
@@ -20,7 +19,7 @@ define([
         initialize: function() {
             this.prepareFilters();
             this.prepareValidators();
-            this.bindEvents();
+            this.getInput();
         },
         prepareFilters: function() {
             var that = this;
@@ -50,24 +49,45 @@ define([
                 });
             });
         },
-        bindEvents: function() {
-            var that = this;
-            this.$el.bind('focus blur change keydown keyup paste', function(e) {
-                that.trigger(e.type, e);
-            });
+        getInput: function() {
+            if (!this.input && this.params.name) {
+                var selector = '*[name="' + this.params.name + '"]';
+                var $elements = this.form.$el.find(selector);
+                this.input = ($elements.length > 0) ? $elements : false;
 
-            this.on('change', this.filter, this);
-            this.on('change', this.validate, this);
+                if (this.input) {
+                    this.bindEvents();
+                }
+            }
+
+            return this.input;
+        },
+        bindEvents: function() {
+            var input = this.getInput();
+
+            if (input) {
+                var that = this;
+                input.bind('focus blur change keydown keyup paste', function(e) {
+                    that.trigger(e.type, e);
+                });
+
+                this.on('change', this.filter, this);
+                this.on('change', this.validate, this);
+            }
         },
         filter: function() {
-            var currentValue = this.$el.val();
-            var filteredValue = currentValue;
+            var input = this.getInput();
 
-            $.each(this.filters, function(index, filter) {
-                filteredValue = filter.filter(filteredValue);
-            });
+            if (input) {
+                var currentValue = input.val();
+                var filteredValue = currentValue;
 
-            this.$el.val(filteredValue);
+                $.each(this.filters, function(index, filter) {
+                    filteredValue = filter.filter(filteredValue);
+                });
+
+                input.val(filteredValue);
+            }
         },
         validate: function() {
             var isValid = this.isValid();
@@ -75,6 +95,26 @@ define([
             this.renderMessages();
 
             return isValid;
+        },
+        getValue: function() {
+            var input = this.getInput();
+
+            if (input && (input.attr('type') === 'radio' || input.attr('type') === 'checkbox')) {
+                input = input.filter(':checked');
+
+                if (input.length > 1) {
+                    var values = [];
+                    input.each(function(index, element) {
+                        values.push($(element).val());
+                    });
+
+                    return values;
+                } else {
+                    return input.val();
+                }
+            } else {
+                return (input) ? input.val() : '';
+            }
         },
         renderMessages: function() {
             if (!this.params.renderMessages) {
@@ -95,7 +135,7 @@ define([
         },
         isValid: function() {
             this.messages = [];
-            var currentValue = this.$el.val();
+            var currentValue = this.getValue();
             var valid = true;
 
             var that = this;
@@ -110,7 +150,8 @@ define([
             return valid;
         },
         getTarget: function() {
-            return this.$el.parent('div.element, fieldset');
+            var input = this.getInput();
+            return (input) ? input.parent('div.element, fieldset') : this.form.$el;
         }
     });
 
@@ -129,6 +170,7 @@ define([
 
     _.extend(jzForm.prototype, Backbone.Events, {
         elements: {},
+        messages: [],
         initialize: function() {
             this.prepareElements();
             this.bindEvents();
@@ -136,10 +178,9 @@ define([
         prepareElements: function() {
             var that = this;
             $.each(this.params.form.elements, function(name, params) {
-                var $element = that.$el.find('*[name="' + name + '"]');
                 var options = $.extend(that.params.element, params);
 
-                var element = that.elements[name] = new jzFormElement(that, $element, options);
+                var element = that.elements[name] = new jzFormElement(that, options);
                 that.listenToElementEvents.call(that, element);
             });
         },
@@ -161,7 +202,7 @@ define([
         getValues: function() {
             var values = {};
             $.each(this.elements, function(name, element) {
-                values[name] = element.$el.val();
+                values[name] = element.getValue();
             });
 
             return values;
@@ -186,7 +227,11 @@ define([
 
             return valid;
         },
+        reset: function() {
+            this.$el.get(0).reset();
+        },
         submit: function(e) {
+            this.messages = [];
             this.trigger('before:submit');
 
             if (this.validate()) {
@@ -213,6 +258,26 @@ define([
 
                 $fieldset.append(html);
             });
+        },
+        renderMessages: function() {
+            var target = this.$el;
+            var messages = target.find('> .messages');
+            if (messages.length === 0) {
+                target.prepend('<div class="messages"></div>');
+                messages = target.find('> .messages');
+            }
+
+            messages.empty();
+            $.each(this.messages, function(index, message) {
+                messages.append('<p>' + message + '</p>');
+            });
+        },
+        addMessage: function(message) {
+            if (typeof(this.messages) !== 'array') {
+                this.messages = [];
+            }
+
+            this.messages.push(message);
         }
     });
 

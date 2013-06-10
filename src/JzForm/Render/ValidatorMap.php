@@ -7,6 +7,7 @@ use Zend\Validator\ValidatorInterface;
 class ValidatorMap {
 
     public $names = array(
+        'Zend\I18n\Validator\Alnum' => 'alnum',
         'Zend\\Validator\\EmailAddress' => 'regex',
         'Zend\\Validator\\Identical' => 'matchElement',
         'Zend\\Validator\\NotEmpty' => 'notEmpty',
