@@ -7,12 +7,10 @@ define([
     var jzFormElement = function(form, params) {
         var defaults = {
         };
-
         this.form = form;
         this.params = $.extend(defaults, params);
         this.initialize();
     };
-
     _.extend(jzFormElement.prototype, Backbone.Events, {
         filters: null,
         validators: null,
@@ -23,12 +21,10 @@ define([
         },
         prepareFilters: function() {
             var that = this;
-
             this.filters = [];
             $.each(this.params.filters, function(index, params) {
                 var name = './filter/' + params.name + '.js';
                 var url = require.toUrl(name);
-
                 require([url], function(Filter) {
                     var filter = new Filter(params.options);
                     that.filters.push(filter);
@@ -37,13 +33,11 @@ define([
         },
         prepareValidators: function() {
             var that = this;
-
             this.validators = [];
             $.each(this.params.validators, function(index, params) {
                 var name = './validator/' + params.name + '.js';
                 var url = require.toUrl(name);
                 params.options.element = that;
-
                 require([url], function(Validator) {
                     var validator = new Validator(params.options, params.messages);
                     that.validators.push(validator);
@@ -55,7 +49,6 @@ define([
                 var selector = '*[name="' + this.params.name + '"]';
                 var $elements = this.form.$el.find(selector);
                 this.input = ($elements.length > 0) ? $elements : false;
-
                 if (this.input) {
                     this.bindEvents();
                 }
@@ -65,29 +58,24 @@ define([
         },
         bindEvents: function() {
             var input = this.getInput();
-
             if (input) {
                 var that = this;
                 input.bind('focus blur change keydown keyup paste', function(e) {
                     that.trigger(e.type, e);
                     that.form.trigger(e.type + ':' + that.params.name);
                 });
-
                 this.on('change', this.filter, this);
                 this.on('change', this.validate, this);
             }
         },
         filter: function() {
             var input = this.getInput();
-
             if (input) {
                 var currentValue = input.val();
                 var filteredValue = currentValue;
-
                 $.each(this.filters, function(index, filter) {
                     filteredValue = filter.filter(filteredValue);
                 });
-
                 input.val(filteredValue);
             }
         },
@@ -95,21 +83,17 @@ define([
             var isValid = this.isValid();
             this.getTarget().toggleClass('invalid', !isValid);
             this.renderMessages();
-
             return isValid;
         },
         getValue: function() {
             var input = this.getInput();
-
             if (input && (input.attr('type') === 'radio' || input.attr('type') === 'checkbox')) {
                 input = input.filter(':checked');
-
                 if (input.length > 1) {
                     var values = [];
                     input.each(function(index, element) {
                         values.push($(element).val());
                     });
-
                     return values;
                 } else {
                     return input.val();
@@ -146,16 +130,13 @@ define([
             this.messages = [];
             var currentValue = this.getValue();
             var valid = true;
-
             var that = this;
             $.each(this.validators, function(index, validator) {
                 valid = (valid && validator.isValid(currentValue, that.form));
-
                 if (!valid && validator.message) {
                     that.messages.push(validator.message);
                 }
             });
-
             return valid;
         },
         getTarget: function() {
@@ -163,7 +144,6 @@ define([
             return (input) ? input.parent('div.element, fieldset') : this.form.$el;
         }
     });
-
     var jzForm = function(element, params) {
         var defaults = {
             stopOnFirstError: false,
@@ -171,14 +151,12 @@ define([
                 renderMessages: true
             }
         };
-
         this.$el = $(element);
         this.params = _.extend(defaults, params);
         this.initialize();
     };
-
     _.extend(jzForm.prototype, Backbone.Events, {
-        elements: {},
+        elements: null,
         messages: [],
         initialize: function() {
             this.prepareElements();
@@ -186,12 +164,16 @@ define([
         },
         prepareElements: function() {
             var that = this;
+
+            this.elements = {};
             $.each(this.params.form.elements, function(name, params) {
                 var options = $.extend(that.params.element, params);
-
                 var element = that.elements[name] = new jzFormElement(that, options);
                 that.listenToElementEvents.call(that, element);
             });
+        },
+        getElement: function(name) {
+            return this.elements[name];
         },
         bindEvents: function() {
             var that = this;
@@ -213,19 +195,16 @@ define([
             $.each(this.elements, function(name, element) {
                 values[name] = element.getValue();
             });
-
             return values;
         },
         validate: function() {
             var isValid = this.isValid();
             this.$el.toggleClass('invalid', !isValid);
-
             return isValid;
         },
         isValid: function() {
             var valid = true;
             var stopOnFirstError = this.params.stopOnFirstError;
-
             $.each(this.elements, function(name, element) {
                 if (stopOnFirstError) {
                     valid = (valid && element.validate.call(element));
@@ -233,7 +212,6 @@ define([
                     valid = (element.validate.call(element) && valid);
                 }
             });
-
             return valid;
         },
         reset: function() {
@@ -242,7 +220,6 @@ define([
         submit: function(e) {
             this.messages = [];
             this.trigger('before:submit');
-
             if (this.validate()) {
                 var data = this.getValues();
                 this.trigger('submit', e, data);
@@ -254,17 +231,14 @@ define([
             var $fieldset = $(fieldset);
             var template = $fieldset.find('span').attr('data-template');
             template = template.replace(/\[__remove__\]/g, '');
-
             collection.each(function(resource, index) {
                 var data = {
                     index: index,
                     model: resource.toJSON()
                 };
-
                 var html = _.template(template, data, {
                     interpolate: /__(.+?)__/g
                 });
-
                 $fieldset.append(html);
             });
         },
@@ -277,42 +251,46 @@ define([
             model.on('change', function() {
                 this.populate(model.toJSON());
             }, this);
-
             this.populate(model.toJSON());
         },
-        bindModelSubmit: function(model) {
+        bindModelSubmit: function(model, options, saveOptions) {
+            var that = this;
+            var defaults = {
+                method: 'save',
+                isNew: model.isNew()
+            };
+            options = $.extend(defaults, options);
+
+            var saveDefaults = {
+                success: function() {
+                    if (options.isNew) {
+                        Copia.notice('success', 'Successfully created __model__', 10);
+                        that.reset();
+                    } else {
+                        Copia.notice('success', 'Successfully updated __model__', 10);
+                    }
+                },
+                error: function(model, fail) {
+                    var response = JSON.parse(fail.responseText);
+                    if (response['error-message']) {
+                        that.addMessage(response['error-message']);
+                        that.renderMessages();
+                    } else {
+                        Copia.notice('fail', 'Failed saving __model__');
+                        console.log('response', response);
+                    }
+                }
+            };
+            saveOptions = $.extend(saveDefaults, saveOptions);
             this.on('submit', function(e) {
                 e.preventDefault();
-                var that = this;
-
-                var isNew = model.isNew();
-                model.save(this.getValues(), {
-                    success: function() {
-                        if (isNew) {
-                            Copia.notice('success', 'Successfully created __model__', 10);
-                            that.reset();
-                        } else {
-                            Copia.notice('success', 'Successfully updated __model__', 10);
-                        }
-                    },
-                    error: function(model, fail) {
-                        var response = JSON.parse(fail.responseText);
-
-                        if (response['error-message']) {
-                            that.addMessage(response['error-message']);
-                            that.renderMessages();
-                        } else {
-                            Copia.notice('fail', 'Failed saving __model__');
-                            console.log('response', response);
-                        }
-                    }
-                });
+                model[options.method].call(model, this.getValues(), saveOptions);
             }, this);
         },
         populate: function(data) {
             var that = this;
             $.each(data, function(key, value) {
-                var element = that.elements[key];
+                var element = that.getElement(key);
                 if (element) {
                     element.setValue(value);
                 }
@@ -339,6 +317,5 @@ define([
             this.messages.push(message);
         }
     });
-
     return jzForm;
 });

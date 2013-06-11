@@ -1,4 +1,4 @@
-<div class="element">
+<div class="element <?php echo $element->getAttribute('type'); ?>">
     <?php if($label): ?><label><?php echo $label; ?></label><?php endif; ?>
     <?php echo $this->formElement($element); ?>
 </div>
