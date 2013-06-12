@@ -180,6 +180,16 @@ define([
             this.$el.bind('submit', function(e) {
                 that.submit.call(that, e);
             });
+
+            this.on('submit', function() {
+                this.changeSubmitValue('loading');
+            }, this);
+            this.on('submit:success', function() {
+                this.changeSubmitValue('success');
+            }, this);
+            this.on('submit:error', function() {
+                this.changeSubmitValue('error');
+            }, this);
         },
         listenToElementEvents: function(element) {
             element.on('all', function(name) {
@@ -315,6 +325,30 @@ define([
             }
 
             this.messages.push(message);
+        },
+        getSubmitButton: function() {
+            var submit = false;
+            $.each(this.elements, function(name, element) {
+                if (element.params.type === 'submit') {
+                    submit = element.getInput();
+                }
+            });
+
+            return submit;
+        },
+        changeSubmitValue: function(status) {
+            var submit = this.getSubmitButton();
+
+            if (submit) {
+                if (!submit.attr('data-original-value')) {
+                    submit.attr('data-original-value', submit.attr('value'));
+                }
+
+                var key = 'data-' + status + '-value';
+                if (submit.attr(key)) {
+                    submit.attr('value', submit.attr(key));
+                }
+            }
         }
     });
     return jzForm;
