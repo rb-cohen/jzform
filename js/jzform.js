@@ -285,6 +285,12 @@ define([
                     if (response['error-message']) {
                         that.addMessage(response['error-message']);
                         that.renderMessages();
+                    } else if (response['messages']) {
+                        $.each(response['messages'], function() {
+                            that.addMessage(this);
+                        });
+
+                        that.renderMessages();
                     } else {
                         Copia.notice('fail', 'Failed saving __model__');
                         console.log('response', response);
