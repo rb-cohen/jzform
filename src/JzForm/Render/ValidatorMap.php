@@ -10,12 +10,25 @@ class ValidatorMap {
         'Zend\I18n\Validator\Alnum' => 'alnum',
         'Zend\\Validator\\Csrf' => 'notEmpty',
         'Zend\\Validator\\EmailAddress' => 'regex',
+        'Zend\\Validator\\File\\Extension' => 'fileExtension',
+        'Zend\\Validator\\File\\Size' => 'fileSize',
         'Zend\\Validator\\Identical' => 'matchElement',
         'Zend\\Validator\\NotEmpty' => 'notEmpty',
         'Zend\\Validator\\Regex' => 'regex',
         'Zend\\Validator\\StringLength' => 'stringLength',
     );
     public $options = array(
+        'fileExtension' => array(
+            'methods' => array(
+                'extension' => 'getExtension'
+            ),
+        ),
+        'fileSize' => array(
+            'methods' => array(
+                'min' => 'getMin',
+                'max' => 'getMax'
+            ),
+        ),
         'matchElement' => array(
             'methods' => array(
                 'token' => 'getToken'
