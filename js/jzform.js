@@ -11,7 +11,11 @@ define([
         this.params = $.extend(defaults, params);
         this.initialize();
     };
-    _.extend(jzFormElement.prototype, Backbone.Events, {
+
+    jzFormElement.extend = Backbone.View.extend;
+
+    jzFormElement = jzFormElement.extend(Backbone.Events);
+    jzFormElement = jzFormElement.extend({
         filters: null,
         validators: null,
         initialize: function() {
@@ -155,7 +159,11 @@ define([
         this.params = _.extend(defaults, params);
         this.initialize();
     };
-    _.extend(jzForm.prototype, Backbone.Events, {
+
+    jzForm.extend = Backbone.View.extend;
+
+    jzForm = jzForm.extend(Backbone.Events);
+    jzForm = jzForm.extend({
         elements: null,
         messages: [],
         initialize: function() {
@@ -168,8 +176,7 @@ define([
             this.elements = {};
             $.each(this.params.form.elements, function(name, params) {
                 var options = $.extend(that.params.element, params);
-                var element = that.elements[name] = new jzFormElement(that, options);
-                that.listenToElementEvents.call(that, element);
+                that.elements[name] = new jzFormElement(that, options);
             });
         },
         getElement: function(name) {
@@ -189,15 +196,6 @@ define([
             }, this);
             this.on('submit:error', function() {
                 this.changeSubmitValue('error');
-            }, this);
-        },
-        listenToElementEvents: function(element) {
-            element.on('all', function(name) {
-                var args = $.makeArray(arguments);
-                args.shift();
-                args.unshift(element);
-                args.unshift('element:' + name);
-                this.trigger.apply(this, args);
             }, this);
         },
         getValues: function() {
@@ -273,6 +271,8 @@ define([
 
             var saveDefaults = {
                 success: function() {
+                    that.trigger('submit:success');
+
                     if (options.isNew) {
                         Copia.notice('success', 'Successfully created __model__', 10);
                         that.reset();
@@ -281,6 +281,8 @@ define([
                     }
                 },
                 error: function(model, fail) {
+                    that.trigger('submit:error');
+
                     var response = JSON.parse(fail.responseText);
                     if (response['error-message']) {
                         that.addMessage(response['error-message']);
