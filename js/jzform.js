@@ -56,7 +56,9 @@ define([
                 var selector = '*[name="' + this.params.name + '"]';
                 var $elements = this.form.$el.find(selector);
                 this.input = ($elements.length > 0) ? $elements : false;
-                if (!this.input.data('events-bound')) {
+
+                // bind events if not already bound
+                if (this.input && !this.input.data('events-bound')) {
                     this.bindEvents(this.input);
                 }
             }
