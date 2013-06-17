@@ -14,11 +14,14 @@ define([
 
     jzFormElement.extend = Backbone.View.extend;
 
-    jzFormElement = jzFormElement.extend(Backbone.Events);
-    jzFormElement = jzFormElement.extend({
+    $.extend(jzFormElement.prototype, Backbone.Events);
+    $.extend(jzFormElement.prototype, {
         filters: null,
         validators: null,
+        messages: [],
         initialize: function() {
+            this._events = {};
+
             this.prepareFilters();
             this.prepareValidators();
             this.getInput();
@@ -49,38 +52,46 @@ define([
             });
         },
         getInput: function() {
-            if (!this.input && this.params.name) {
+            if (this.params.name) {
                 var selector = '*[name="' + this.params.name + '"]';
                 var $elements = this.form.$el.find(selector);
                 this.input = ($elements.length > 0) ? $elements : false;
-                if (this.input) {
-                    this.bindEvents();
+                if (!this.input.data('events-bound')) {
+                    this.bindEvents(this.input);
                 }
             }
 
             return this.input;
         },
-        bindEvents: function() {
-            var input = this.getInput();
-            if (input) {
-                var that = this;
-                input.bind('focus blur change keydown keyup paste', function(e) {
-                    that.trigger(e.type, e);
-                    that.form.trigger(e.type + ':' + that.params.name);
-                });
-                this.on('change', this.filter, this);
-                this.on('change', this.validate, this);
-            }
+        bindEvents: function(input) {
+            var that = this;
+            input.data('events-bound', 1);
+            input.bind('focus blur change keydown keyup paste', function(e) {
+                that.trigger(e.type, e);
+                that.form.trigger(e.type + ':' + that.params.name);
+            });
+
+
+            this.on('change', this.filter, this);
+            this.on('change', this.validate, this);
         },
         filter: function() {
+            if (this.params.type === 'file') {
+                return;
+            }
+
             var input = this.getInput();
             if (input) {
-                var currentValue = input.val();
+                var currentValue = this.getValue();
                 var filteredValue = currentValue;
+
                 $.each(this.filters, function(index, filter) {
                     filteredValue = filter.filter(filteredValue);
                 });
-                input.val(filteredValue);
+
+                if (filteredValue !== currentValue) {
+                    input.val(filteredValue);
+                }
             }
         },
         validate: function() {
@@ -138,10 +149,13 @@ define([
             $.each(this.validators, function(index, validator) {
                 valid = (valid && validator.isValid(currentValue, that.form));
                 if (!valid && validator.message) {
-                    that.messages.push(validator.message);
+                    that.addMessage(validator.message);
                 }
             });
             return valid;
+        },
+        addMessage: function(message) {
+            this.messages.push(message);
         },
         getTarget: function() {
             var input = this.getInput();
@@ -162,8 +176,8 @@ define([
 
     jzForm.extend = Backbone.View.extend;
 
-    jzForm = jzForm.extend(Backbone.Events);
-    jzForm = jzForm.extend({
+    _.extend(jzForm.prototype, Backbone.Events);
+    _.extend(jzForm.prototype, {
         elements: null,
         messages: [],
         initialize: function() {
