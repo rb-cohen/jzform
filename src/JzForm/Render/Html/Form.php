@@ -39,16 +39,8 @@ class Form extends RenderAbstract {
     }
 
     public function renderFieldset(FieldsetInterface $element) {
-        if ($element instanceof Collection) {
-            return $this->renderCollection($element);
-        }
-
-        return $this->renderElement($element);
-    }
-
-    public function renderCollection(FieldsetInterface $element) {
-        $collectionHelper = new Collection($this->getRenderer());
-        return $collectionHelper->render($element);
+        $helper = new Fieldset($this->getRenderer());
+        return $helper->render($element);
     }
 
     public function renderElement(ElementInterface $element) {

@@ -4,7 +4,7 @@ namespace JzForm\Render\Html;
 
 use Zend\Form\FieldsetInterface;
 
-class Collection extends RenderAbstract {
+class Fieldset extends RenderAbstract {
 
     /**
      * 

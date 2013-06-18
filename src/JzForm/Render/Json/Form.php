@@ -4,12 +4,11 @@ namespace JzForm\Render\Json;
 
 use Zend\Form\FormInterface;
 use Zend\Form\FieldsetInterface;
-use Zend\Form\ElementInterface;
 use Zend\InputFilter\InputFilter as ZfInputFilter;
 
 class Form extends Fieldset {
 
-    public function render(FormInterface $form, ZfInputFilter $inputFilter = null) {
+    public function render(FieldsetInterface $form, ZfInputFilter $inputFilter = null) {
         if (method_exists($form, 'prepare')) {
             $form->prepare();
         }

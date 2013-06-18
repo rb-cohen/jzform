@@ -1,10 +1,8 @@
 define([
     'underscore',
     'jquery',
-    'backbone',
-    './jzformElement',
     './jzformFieldset'
-], function(_, $, Backbone, Element, Fieldset) {
+], function(_, $, Fieldset) {
     var jzForm = function(element, params) {
         var defaults = {
             stopOnFirstError: false,
@@ -14,32 +12,14 @@ define([
         };
         this.$el = $(element);
         this.params = _.extend(defaults, params);
+        console.log('form', this);
         this.initialize();
     };
 
-    jzForm.extend = Backbone.View.extend;
-    jzForm.Element = Element;
-    jzForm.Fieldset = Fieldset;
-
-    _.extend(jzForm.prototype, Backbone.Events);
-    _.extend(jzForm.prototype, {
-        elements: null,
-        messages: [],
+    _.extend(jzForm.prototype, Fieldset.prototype, {
         initialize: function() {
-            this.prepareElements();
+            Fieldset.prototype.initialize.apply(this, arguments);
             this.bindEvents();
-        },
-        prepareElements: function() {
-            var that = this;
-            this.elements = {};
-
-            $.each(that.params.form.elements, function(name, params) {
-                var options = $.extend(that.params.element, params);
-                that.elements[name] = new jzForm.Element(that, options);
-            });
-        },
-        getElement: function(name) {
-            return this.elements[name];
         },
         bindEvents: function() {
             var that = this;
@@ -57,29 +37,11 @@ define([
                 this.changeSubmitValue('error');
             }, this);
         },
-        getValues: function() {
-            var values = {};
-            $.each(this.elements, function(name, element) {
-                values[name] = element.getValue();
-            });
-            return values;
+        getForm: function() {
+            return this;
         },
-        validate: function() {
-            var isValid = this.isValid();
-            this.$el.toggleClass('invalid', !isValid);
-            return isValid;
-        },
-        isValid: function() {
-            var valid = true;
-            var stopOnFirstError = this.params.stopOnFirstError;
-            $.each(this.elements, function(name, element) {
-                if (stopOnFirstError) {
-                    valid = (valid && element.validate.call(element));
-                } else {
-                    valid = (element.validate.call(element) && valid);
-                }
-            });
-            return valid;
+        getElementParameters: function() {
+            return this.params.form.elements;
         },
         reset: function() {
             this.$el.get(0).reset();
@@ -93,21 +55,6 @@ define([
             } else {
                 e.preventDefault();
             }
-        },
-        buildElementsFromCollection: function(fieldset, collection) {
-            var $fieldset = $(fieldset);
-            var template = $fieldset.find('span').attr('data-template');
-            template = template.replace(/\[__remove__\]/g, '');
-            collection.each(function(resource, index) {
-                var data = {
-                    index: index,
-                    model: resource.toJSON()
-                };
-                var html = _.template(template, data, {
-                    interpolate: /__(.+?)__/g
-                });
-                $fieldset.append(html);
-            });
         },
         bindModel: function(model) {
             this.model = model;
@@ -163,15 +110,6 @@ define([
                 e.preventDefault();
                 model[options.method].call(model, this.getValues(), saveOptions);
             }, this);
-        },
-        populate: function(data) {
-            var that = this;
-            $.each(data, function(key, value) {
-                var element = that.getElement(key);
-                if (element) {
-                    element.setValue(value);
-                }
-            });
         },
         renderMessages: function() {
             var target = this.$el;

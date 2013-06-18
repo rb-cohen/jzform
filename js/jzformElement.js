@@ -158,5 +158,4 @@ define([
     });
 
     return Element;
-
 });
