@@ -6,6 +6,8 @@ define([
 ], function(require, _, $, Backbone) {
     Element = function(form, params) {
         var defaults = {
+            filters: [],
+            validators: []
         };
         this.form = form;
         this.params = $.extend(defaults, params);
@@ -14,6 +16,7 @@ define([
     Element.extend = Backbone.View.extend;
     $.extend(Element.prototype, Backbone.Events);
     $.extend(Element.prototype, {
+        input: null,
         filters: null,
         validators: null,
         messages: [],
@@ -49,17 +52,24 @@ define([
             });
         },
         getInput: function() {
-            if (this.params.name) {
+            if (!this.input) {
                 var selector = '*[name="' + this.params.name + '"]';
                 var $elements = this.form.$el.find(selector);
-                this.input = ($elements.length > 0) ? $elements : false;
-                // bind events if not already bound
-                if (this.input && !this.input.data('events-bound')) {
-                    this.bindEvents(this.input);
+                var input = ($elements.length > 0) ? $elements : false;
+
+                if (input) {
+                    this.setInput(input);
                 }
             }
 
             return this.input;
+        },
+        setInput: function(input) {
+            this.input = input;
+            // bind events if not already bound            
+            if (this.input && !this.input.data('events-bound')) {
+                this.bindEvents(this.input);
+            }
         },
         bindEvents: function(input) {
             var that = this;

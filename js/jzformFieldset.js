@@ -1,10 +1,9 @@
 define([
-    'require',
     'underscore',
     'jquery',
     'backbone',
     './jzformElement'
-], function(require, _, $, Backbone, Element) {
+], function(_, $, Backbone, Element) {
     var Fieldset = function(form, params) {
         var defaults = {
         };
@@ -26,19 +25,20 @@ define([
             $.each(this.getElementParameters(), function(name, params) {
                 var form = that.getForm.call(that);
                 var options = $.extend(that.params.element, params);
-                console.log('add', form, options);
 
                 switch (options.type) {
                     case 'fieldset':
-                        that.elements[name] = new Fieldset(form, options);
+                        that.addElement(name, new Fieldset(form, options));
                         break;
                     case 'element':
                     default:
-                        that.elements[name] = new Element(form, options);
+                        that.addElement(name, new Element(form, options));
                         break;
                 }
-
             });
+        },
+        addElement: function(name, element) {
+            this.elements[name] = element;
         },
         getForm: function() {
             return this.form;
@@ -82,10 +82,10 @@ define([
         },
         buildElementsFromCollection: function(collection) {
             var $fieldset = this.getInput();
-            console.log('build', $fieldset, collection);
-
             var template = $fieldset.find('span').attr('data-template');
             template = template.replace(/\[__remove__\]/g, '');
+
+            var that = this;
             collection.each(function(resource, index) {
                 var data = {
                     index: index,
@@ -95,6 +95,17 @@ define([
                     interpolate: /__(.+?)__/g
                 });
                 $fieldset.append(html);
+
+                var input = $fieldset.find('.element:last');
+                var name = that.params.name + '_' + index;
+                var options = {
+                    name: that.params.name
+                };
+
+                var element = new Element(that.getForm(), options);
+                element.setInput(input);
+
+                that.addElement(name, element);
             });
         },
         populate: function(data) {
