@@ -36,8 +36,8 @@ class TemplateForm extends Form {
         $submit = new Submit('register');
         $submit->setValue('Register');
 
-        $this->add($email)
-                ->add($password)
+        $this/*->add($email)
+                ->add($password)*/
                 ->add($memberOf)
                 ->add($submit);
 

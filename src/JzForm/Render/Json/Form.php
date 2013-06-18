@@ -7,7 +7,7 @@ use Zend\Form\FieldsetInterface;
 use Zend\Form\ElementInterface;
 use Zend\InputFilter\InputFilter as ZfInputFilter;
 
-class Form extends RenderAbstract {
+class Form extends Fieldset {
 
     public function render(FormInterface $form, ZfInputFilter $inputFilter = null) {
         if (method_exists($form, 'prepare')) {
@@ -30,25 +30,6 @@ class Form extends RenderAbstract {
         }
 
         return $formData;
-    }
-
-    public function renderElements(FieldsetInterface $form) {
-        $data = array();
-        foreach ($form as $element) {
-            if ($element instanceof FieldsetInterface) {
-                $elements = $this->renderElements($element);
-                $data = array_merge($data, $elements);
-            } else {
-                $data[$element->getName()] = $this->renderElement($element);
-            }
-        }
-
-        return $data;
-    }
-
-    public function renderElement(ElementInterface $element) {
-        $render = new Element;
-        return $render->render($element);
     }
 
     public function renderInputFilter(FormInterface $form, ZfInputFilter $inputFilter = null) {

@@ -29,13 +29,21 @@ class Form extends RenderAbstract {
         $html = null;
         foreach ($form as $element) {
             if ($element instanceof FieldsetInterface) {
-                $html.= $this->renderCollection($element);
+                $html.= $this->renderFieldset($element);
             } else {
                 $html .= $this->renderElement($element);
             }
         }
 
         return $html;
+    }
+
+    public function renderFieldset(FieldsetInterface $element) {
+        if ($element instanceof Collection) {
+            return $this->renderCollection($element);
+        }
+
+        return $this->renderElement($element);
     }
 
     public function renderCollection(FieldsetInterface $element) {
