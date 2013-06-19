@@ -11,7 +11,6 @@ define([
         this.params = $.extend(defaults, params);
         this.initialize();
     };
-
     _.extend(Fieldset.prototype, Backbone.Events, {
         elements: null,
         messages: [],
@@ -21,11 +20,9 @@ define([
         prepareElements: function() {
             var that = this;
             this.elements = {};
-
             $.each(this.getElementParameters(), function(name, params) {
                 var form = that.getForm.call(that);
                 var options = $.extend(that.params.element, params);
-
                 switch (options.type) {
                     case 'fieldset':
                         that.addElement(name, new Fieldset(form, options));
@@ -52,10 +49,24 @@ define([
         getInput: function() {
             return this.getForm().$el.find('*[id="' + this.params.name + '-fieldset"]');
         },
+        getValue: function() {
+            return this.getValues();
+        },
         getValues: function() {
             var values = {};
             $.each(this.elements, function(name, element) {
-                values[name] = element.getValue();
+                var index = element.params.name;
+                var value = element.getValue();
+
+                if (typeof(values[index]) === 'array') {
+                    values[index].push(value);
+                } else if (typeof(values[index]) !== 'undefined' && typeof(value) !== 'undefined') {
+                    values[index] = [values[index], value];
+                } else if (typeof(values[index]) !== 'undefined') {
+                    values[index] = [values[index]];
+                } else {
+                    values[index] = value;
+                }
             });
             return values;
         },
@@ -84,7 +95,6 @@ define([
             var $fieldset = this.getInput();
             var template = $fieldset.find('span').attr('data-template');
             template = template.replace(/\[__remove__\]/g, '');
-
             var that = this;
             collection.each(function(resource, index) {
                 var data = {
@@ -95,16 +105,13 @@ define([
                     interpolate: /__(.+?)__/g
                 });
                 $fieldset.append(html);
-
-                var input = $fieldset.find('.element:last');
+                var input = $fieldset.find('.element:last *[name]');
                 var name = that.params.name + '_' + index;
                 var options = {
                     name: that.params.name
                 };
-
                 var element = new Element(that.getForm(), options);
                 element.setInput(input);
-
                 that.addElement(name, element);
             });
         },
@@ -118,6 +125,5 @@ define([
             });
         }
     });
-
     return Fieldset;
 });
