@@ -12,7 +12,6 @@ define([
         };
         this.$el = $(element);
         this.params = _.extend(defaults, params);
-        console.log('form', this);
         this.initialize();
     };
 
