@@ -60,10 +60,17 @@ define([
 
                 if (typeof(values[index]) === 'array') {
                     values[index].push(value);
-                } else if (typeof(values[index]) !== 'undefined' && typeof(value) !== 'undefined') {
-                    values[index] = [values[index], value];
-                } else if (typeof(values[index]) !== 'undefined') {
-                    values[index] = [values[index]];
+                } else if (index in values) {
+                    var original = values[index];
+                    values[index] = [];
+
+                    if (original) {
+                        values[index].push(original);
+                    }
+
+                    if (value) {
+                        values[index].push(value);
+                    }
                 } else {
                     values[index] = value;
                 }
