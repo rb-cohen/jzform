@@ -13,6 +13,7 @@ class ValidatorMap {
         'Zend\\Validator\\File\\Extension' => 'fileExtension',
         'Zend\\Validator\\File\\Size' => 'fileSize',
         'Zend\\Validator\\Identical' => 'matchElement',
+        'Zend\\Validator\\InArray' => 'inArray',
         'Zend\\Validator\\NotEmpty' => 'notEmpty',
         'Zend\\Validator\\Regex' => 'regex',
         'Zend\\Validator\\StringLength' => 'stringLength',
@@ -28,6 +29,11 @@ class ValidatorMap {
                 'min' => 'getMin',
                 'max' => 'getMax'
             ),
+        ),
+        'inArray' => array(
+            'methods' => array(
+                'haystack' => 'getHaystack',
+            )
         ),
         'matchElement' => array(
             'methods' => array(
