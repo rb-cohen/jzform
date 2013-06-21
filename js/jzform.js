@@ -26,15 +26,15 @@ define([
                 that.submit.call(that, e);
             });
 
-            this.on('submit', function() {
+            this.listenTo(this, 'submit', function() {
                 this.changeSubmitValue('loading');
-            }, this);
-            this.on('submit:success', function() {
+            });
+            this.listenTo(this, 'submit:success', function() {
                 this.changeSubmitValue('success');
-            }, this);
-            this.on('submit:error', function() {
+            });
+            this.listenTo(this, 'submit:error', function() {
                 this.changeSubmitValue('error');
-            }, this);
+            });
         },
         getForm: function() {
             return this;
@@ -61,9 +61,9 @@ define([
             this.bindModelSubmit(model);
         },
         bindModelPopulate: function(model) {
-            model.on('change', function() {
+            this.listenTo(model, 'change', function() {
                 this.populate(model.toJSON());
-            }, this);
+            });
             this.populate(model.toJSON());
         },
         bindModelSubmit: function(model, options, saveOptions) {
@@ -105,10 +105,10 @@ define([
                 }
             };
             saveOptions = $.extend(saveDefaults, saveOptions);
-            this.on('submit', function(e) {
+            this.listenTo(this, 'submit', function(e) {
                 e.preventDefault();
                 model[options.method].call(model, this.getValues(), saveOptions);
-            }, this);
+            });
         },
         renderMessages: function() {
             var target = this.$el;
@@ -153,6 +153,12 @@ define([
                     submit.attr('value', submit.attr(key));
                 }
             }
+        },
+        destroy: function() {
+            this.trigger('before:destroy');
+            console.log('form destroyed!');
+            this.stopListening();
+            this.trigger('destroy');
         }
     });
 

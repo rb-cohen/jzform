@@ -13,7 +13,7 @@ define([
             if (this.params.element && this.params.token) {
                 var element = this.params.element;
                 var token = this.params.token;
-                element.form.on('change:' + token, element.validate, element);
+                element.listenTo(element.form, 'change:' + token, element.validate);
             }
         },
         isValid: function(value, context) {

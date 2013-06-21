@@ -22,6 +22,8 @@ define([
         messages: [],
         initialize: function() {
             this._events = {};
+            this.listenTo(this.form, 'before:close', this.destroy);
+
             this.prepareFilters();
             this.prepareValidators();
             this.getInput();
@@ -78,8 +80,8 @@ define([
                 that.trigger(e.type, e);
                 that.form.trigger(e.type + ':' + that.params.name);
             });
-            this.on('change', this.filter, this);
-            this.on('change', this.validate, this);
+            this.listenTo(this, 'change', this.filter);
+            this.listenTo(this, 'change', this.validate);
         },
         filter: function() {
             if (this.params.type === 'file') {
@@ -164,6 +166,11 @@ define([
         getTarget: function() {
             var input = this.getInput();
             return (input) ? input.parent('div.element, fieldset') : this.form.$el;
+        },
+        destroy: function() {
+            this.trigger('before:destroy');
+            this.stopListening();
+            this.trigger('destroy');
         }
     });
 
