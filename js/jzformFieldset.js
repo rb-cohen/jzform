@@ -79,7 +79,7 @@ define([
         },
         validate: function() {
             var isValid = this.isValid();
-            this.$el.toggleClass('invalid', !isValid);
+            this.getInput().toggleClass('invalid', !isValid);
             return isValid;
         },
         isValid: function() {
