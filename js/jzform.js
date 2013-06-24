@@ -156,7 +156,6 @@ define([
         },
         destroy: function() {
             this.trigger('before:destroy');
-            console.log('form destroyed!');
             this.stopListening();
             this.trigger('destroy');
         }
