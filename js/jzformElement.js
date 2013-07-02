@@ -130,6 +130,21 @@ define([
                 this.filter();
             }
         },
+        setOptions: function(options) {
+            var $input = this.getInput();
+            var type = $input.get(0).type || $input.attr('type');
+            switch (type) {
+                case 'select-one':
+                case 'select-multi':
+                    var html = '';
+                    $.each(options, function(value, label) {
+                        html += '<option value="' + value + '">' + label + '</option>';
+                    });
+
+                    $input.html(html);
+                    break;
+            }
+        },
         renderMessages: function() {
             if (!this.params.renderMessages) {
                 return;
