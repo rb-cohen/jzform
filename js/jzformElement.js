@@ -78,7 +78,7 @@ define([
             input.data('events-bound', 1);
             input.bind('focus blur change keydown keyup paste', function(e) {
                 that.trigger(e.type, e);
-                that.form.trigger(e.type + ':' + that.params.name);
+                that.form.trigger(e.type + ':' + that.params.name, that);
             });
             this.listenTo(this, 'change', this.filter);
             this.listenTo(this, 'change', this.validate);

@@ -8,6 +8,7 @@ class FilterMap {
 
     public $names = array(
         'Zend\\Filter\\StringTrim' => 'stringTrim',
+        'Zend\\Filter\\StringToLower' => 'stringToLower',
     );
     public $options = array(
     );
