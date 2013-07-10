@@ -7,6 +7,7 @@ use Zend\Filter\FilterInterface;
 class FilterMap {
 
     public $names = array(
+        'Zend\\Filter\\Int' => 'int',
         'Zend\\Filter\\StringTrim' => 'stringTrim',
         'Zend\\Filter\\StringToLower' => 'stringToLower',
     );

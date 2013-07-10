@@ -8,6 +8,8 @@ class ValidatorMap {
 
     public $names = array(
         'Zend\I18n\Validator\Alnum' => 'alnum',
+        'Zend\I18n\Validator\Int' => 'int',
+        'Zend\\Validator\\Between' => 'between',
         'Zend\\Validator\\Csrf' => 'notEmpty',
         'Zend\\Validator\\EmailAddress' => 'regex',
         'Zend\\Validator\\File\\Extension' => 'fileExtension',
@@ -19,6 +21,12 @@ class ValidatorMap {
         'Zend\\Validator\\StringLength' => 'stringLength',
     );
     public $options = array(
+        'between' => array(
+            'methods' => array(
+                'min' => 'getMin',
+                'max' => 'getMax',
+            ),
+        ),
         'fileExtension' => array(
             'methods' => array(
                 'extension' => 'getExtension'
