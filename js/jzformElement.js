@@ -83,24 +83,27 @@ define([
             this.listenTo(this, 'change', this.filter);
             this.listenTo(this, 'change', this.validate);
         },
-        filter: function(doNotUpdate) {
+        filter: function() {
             if (this.params.type === 'file') {
                 return;
             }
 
-            var filteredValue = null;
             var input = this.getInput();
 
             if (input) {
                 var currentValue = this.getValue();
-                filteredValue = currentValue;
-                $.each(this.filters, function(index, filter) {
-                    filteredValue = filter.filter(filteredValue);
-                });
-                if (filteredValue !== currentValue && !doNotUpdate) {
+                var filteredValue = this.filterValue(currentValue);
+
+                if (filteredValue !== currentValue) {
                     input.val(filteredValue);
                 }
             }
+        },
+        filterValue: function(value) {
+            var filteredValue = value;
+            $.each(this.filters, function(index, filter) {
+                filteredValue = filter.filter(filteredValue);
+            });
 
             return filteredValue;
         },
@@ -127,20 +130,21 @@ define([
                     return null;
                 }
             } else {
+                console.log('got here', input);
                 return (input) ? input.val() : '';
             }
         },
         setValue: function(value) {
-            var that = this;
             var input = this.getInput();
+            var filtered = this.filterValue(value);
+
             input.each(function() {
                 var $this = $(this);
                 switch ($this.attr('type')) {
                     case 'checkbox':
-                        $this.prop('checked', (value));
+                        $this.prop('checked', (filtered));
                         break;
                     default:
-                        var filtered = that.filter(true);
                         $this.val(filtered);
                 }
             });
