@@ -83,22 +83,26 @@ define([
             this.listenTo(this, 'change', this.filter);
             this.listenTo(this, 'change', this.validate);
         },
-        filter: function() {
+        filter: function(doNotUpdate) {
             if (this.params.type === 'file') {
                 return;
             }
 
+            var filteredValue = null;
             var input = this.getInput();
+
             if (input) {
                 var currentValue = this.getValue();
-                var filteredValue = currentValue;
+                filteredValue = currentValue;
                 $.each(this.filters, function(index, filter) {
                     filteredValue = filter.filter(filteredValue);
                 });
-                if (filteredValue !== currentValue) {
+                if (filteredValue !== currentValue && !doNotUpdate) {
                     input.val(filteredValue);
                 }
             }
+
+            return filteredValue;
         },
         validate: function() {
             var isValid = this.isValid();
@@ -108,7 +112,8 @@ define([
         },
         getValue: function() {
             var input = this.getInput();
-            if (input && (input.attr('type') === 'radio' || input.attr('type') === 'checkbox')) {
+
+            if (input && (input.filter('[type=radio]').length > 0 || input.filter('[type=checkbox]').length > 0)) {
                 input = input.filter(':checked');
                 if (input.length > 1) {
                     var values = [];
@@ -116,19 +121,29 @@ define([
                         values.push($(element).val());
                     });
                     return values;
-                } else {
+                } else if (input.length === 1) {
                     return input.val();
+                } else {
+                    return null;
                 }
             } else {
                 return (input) ? input.val() : '';
             }
         },
         setValue: function(value) {
+            var that = this;
             var input = this.getInput();
-            if (input) {
-                input.val(value);
-                this.filter();
-            }
+            input.each(function() {
+                var $this = $(this);
+                switch ($this.attr('type')) {
+                    case 'checkbox':
+                        $this.prop('checked', (value));
+                        break;
+                    default:
+                        var filtered = that.filter(true);
+                        $this.val(filtered);
+                }
+            });
         },
         setOptions: function(options) {
             var $input = this.getInput();
