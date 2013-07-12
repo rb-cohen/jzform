@@ -80,7 +80,7 @@ define([
                 that.trigger(e.type, e);
                 that.form.trigger(e.type + ':' + that.params.name, that);
             });
-            this.listenTo(this, 'change', this.filter);
+            //this.listenTo(this, 'change', this.filter);
             this.listenTo(this, 'change', this.validate);
         },
         filter: function() {
@@ -89,15 +89,13 @@ define([
             }
 
             var input = this.getInput();
-
             if (input) {
                 var currentValue = this.getValue();
                 var filteredValue = this.filterValue(currentValue);
-
-                if (filteredValue !== currentValue) {
-                    input.val(filteredValue);
-                }
+                input.val(filteredValue);
             }
+
+            return true;
         },
         filterValue: function(value) {
             var filteredValue = value;
@@ -130,7 +128,6 @@ define([
                     return null;
                 }
             } else {
-                console.log('got here', input);
                 return (input) ? input.val() : '';
             }
         },
