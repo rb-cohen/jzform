@@ -7,9 +7,11 @@ use Zend\Filter\FilterInterface;
 class FilterMap {
 
     public $names = array(
+        'Zend\\Filter\\Boolean' => 'boolean',
         'Zend\\Filter\\Int' => 'int',
         'Zend\\Filter\\StringTrim' => 'stringTrim',
         'Zend\\Filter\\StringToLower' => 'stringToLower',
+        'Zend\\Filter\\StringToUpper' => 'stringToUpper',
     );
     public $options = array(
     );
