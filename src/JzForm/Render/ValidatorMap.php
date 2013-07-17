@@ -9,15 +9,19 @@ class ValidatorMap {
     public $names = array(
         'Zend\I18n\Validator\Alnum' => 'alnum',
         'Zend\I18n\Validator\Int' => 'int',
+        'Zend\I18n\Validator\Float' => 'float',
         'Zend\\Validator\\Between' => 'between',
         'Zend\\Validator\\Csrf' => 'notEmpty',
         'Zend\\Validator\\EmailAddress' => 'regex',
         'Zend\\Validator\\File\\Extension' => 'fileExtension',
         'Zend\\Validator\\File\\Size' => 'fileSize',
+        'Zend\\Validator\\GreaterThan' => 'greaterThan',
         'Zend\\Validator\\Identical' => 'matchElement',
         'Zend\\Validator\\InArray' => 'inArray',
+        'Zend\\Validator\\LessThan' => 'lessThan',
         'Zend\\Validator\\NotEmpty' => 'notEmpty',
         'Zend\\Validator\\Regex' => 'regex',
+        'Zend\\Validator\\Step' => 'step',
         'Zend\\Validator\\StringLength' => 'stringLength',
     );
     public $options = array(
