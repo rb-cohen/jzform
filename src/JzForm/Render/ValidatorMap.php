@@ -13,6 +13,7 @@ class ValidatorMap {
         'Zend\\Validator\\Between' => 'between',
         'Zend\\Validator\\Csrf' => 'notEmpty',
         'Zend\\Validator\\EmailAddress' => 'regex',
+        'Zend\\Validator\\Explode' => 'explode',
         'Zend\\Validator\\File\\Extension' => 'fileExtension',
         'Zend\\Validator\\File\\Size' => 'fileSize',
         'Zend\\Validator\\GreaterThan' => 'greaterThan',
@@ -29,6 +30,11 @@ class ValidatorMap {
             'methods' => array(
                 'min' => 'getMin',
                 'max' => 'getMax',
+            ),
+        ),
+        'explode' => array(
+            'methods' => array(
+                'validator' => 'getValidator'
             ),
         ),
         'fileExtension' => array(
