@@ -141,6 +141,9 @@ define([
                     case 'checkbox':
                         $this.prop('checked', (filtered));
                         break;
+                    case 'radio':
+                        $this.prop('checked', (filtered == $this.val()));
+                        break;
                     default:
                         $this.val(filtered);
                 }

@@ -113,7 +113,7 @@ define([
         buildElementsFromArray: function(array) {
             var that = this;
             var template = this.getTemplate();
-            
+
             $.each(array, function(index, resource) {
                 var data = {
                     index: index,
@@ -147,11 +147,14 @@ define([
         populate: function(data) {
             var that = this;
             $.each(data, function(key, value) {
-                var element = that.getElement(key);
+                var element = that.getElement(key);                
                 if (element) {
                     element.setValue(value);
                 }
             });
+        },
+        setValue: function(data) {
+            this.populate(data);
         }
     });
     return Fieldset;
