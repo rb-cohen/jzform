@@ -99,28 +99,50 @@ define([
             this.getInput().find(selector).remove();
         },
         buildElementsFromCollection: function(collection) {
-            var $fieldset = this.getInput();
-            var template = $fieldset.find('span').attr('data-template');
-            template = template.replace(/\[__remove__\]/g, '');
             var that = this;
+            var template = this.getTemplate();
             collection.each(function(resource, index) {
                 var data = {
                     index: index,
                     model: resource.toJSON()
                 };
-                var html = _.template(template, data, {
-                    interpolate: /__(.+?)__/g
-                });
-                $fieldset.append(html);
-                var input = $fieldset.find('.element:last *[name]');
-                var name = that.params.name + '_' + index;
-                var options = {
-                    name: that.params.name
-                };
-                var element = new Element(that.getForm(), options);
-                element.setInput(input);
-                that.addElement(name, element);
+
+                that.buildElement(template, data);
             });
+        },
+        buildElementsFromArray: function(array) {
+            var that = this;
+            var template = this.getTemplate();
+            
+            $.each(array, function(index, resource) {
+                var data = {
+                    index: index,
+                    model: resource
+                };
+
+                that.buildElement(template, data);
+            });
+        },
+        buildElement: function(template, data) {
+            var html = _.template(template, data, {
+                interpolate: /__(.+?)__/g
+            });
+
+            var $fieldset = this.getInput();
+            $fieldset.append(html);
+            var input = $fieldset.find('.element:last *[name]');
+            var name = this.params.name + '_' + data.index;
+            var options = {
+                name: this.params.name
+            };
+            var element = new Element(this.getForm(), options);
+            element.setInput(input);
+            this.addElement(name, element);
+        },
+        getTemplate: function() {
+            var $fieldset = this.getInput();
+            var template = $fieldset.find('span').attr('data-template');
+            return template.replace(/\[__remove__\]/g, '');
         },
         populate: function(data) {
             var that = this;
