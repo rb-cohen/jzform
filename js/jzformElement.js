@@ -114,7 +114,7 @@ define([
         getValue: function() {
             var input = this.getInput();
 
-            if (input && (input.filter('[type=radio]').length > 0 || input.filter('[type=checkbox]').length > 0)) {
+            if (input && input.filter('[type=radio],[type=checkbox]').length > 0) {
                 input = input.filter(':checked');
                 if (input.length > 1) {
                     var values = [];
@@ -139,10 +139,14 @@ define([
                 var $this = $(this);
                 switch ($this.attr('type')) {
                     case 'checkbox':
-                        $this.prop('checked', (filtered));
-                        break;
                     case 'radio':
-                        $this.prop('checked', (filtered == $this.val()));
+                        if (filtered instanceof Array) {
+                            var values = filtered.map(function(x){ return x.toString(); });
+                            var needle = $this.val().toString();
+                            $this.prop('checked', (values.indexOf(needle) > -1));
+                        } else {
+                            $this.prop('checked', (filtered == $this.val()));
+                        }
                         break;
                     default:
                         $this.val(filtered);
