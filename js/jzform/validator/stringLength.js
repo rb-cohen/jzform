@@ -1,5 +1,5 @@
 define([
-    './validator.js'
+    'jzform/validator/validator'
 ], function(Validator) {
     var StringLength = function(params, messageTemplates) {
         this.params = params;

@@ -2,7 +2,7 @@ define([
     'underscore',
     'jquery',
     'backbone',
-    './jzformElement'
+    'jzform/jzformElement'
 ], function(_, $, Backbone, Element) {
     var Fieldset = function(form, params) {
         var defaults = {

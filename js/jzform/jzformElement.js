@@ -32,9 +32,8 @@ define([
             var that = this;
             this.filters = [];
             $.each(this.params.filters, function(index, params) {
-                var name = './filter/' + params.name + '.js';
-                var url = require.toUrl(name);
-                require([url], function(Filter) {
+                var name = 'jzform/filter/' + params.name;
+                require([name], function(Filter) {
                     var filter = new Filter(params.options);
                     that.filters.push(filter);
                 });
@@ -44,10 +43,9 @@ define([
             var that = this;
             this.validators = [];
             $.each(this.params.validators, function(index, params) {
-                var name = './validator/' + params.name + '.js';
-                var url = require.toUrl(name);
+                var name = 'jzform/validator/' + params.name;
                 params.options.element = that;
-                require([url], function(Validator) {
+                require([name], function(Validator) {
                     var validator = new Validator(params.options, params.messages);
                     that.validators.push(validator);
                 });

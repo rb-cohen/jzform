@@ -1,7 +1,7 @@
 define([
     'underscore',
     'jquery',
-    './jzformFieldset'
+    'jzform/jzformFieldset'
 ], function(_, $, Fieldset) {
     var jzForm = function(element, params) {
         var defaults = {

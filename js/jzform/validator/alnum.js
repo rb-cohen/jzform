@@ -1,5 +1,5 @@
 define([
-    './validator.js'
+    'jzform/validator/validator'
 ], function(Validator) {
     var Alnum = function(params, messageTemplates) {
         this.params = params;

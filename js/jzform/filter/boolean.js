@@ -1,12 +1,12 @@
 define([
-    './filter.js'
+    'jzform/filter/filter'
 ], function(Filter) {
     var Boolean = Filter;
 
     Boolean.extend(Boolean.prototype, {
         filter: function(value) {
             switch (true) {
-                case (value == false):
+                case (value === false):
                 case (value <= 0):
                 case (value === '0'):
                 case (value === ''):

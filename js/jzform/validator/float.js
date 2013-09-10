@@ -1,17 +1,17 @@
 define([
-    './validator.js'
+    'jzform/validator/validator'
 ], function(Validator) {
-    var Int = function(params, messageTemplates) {
+    var Float = function(params, messageTemplates) {
         this.params = params;
         this.messageTemplates = messageTemplates;
     };
 
-    Validator.extend(Int.prototype, Validator, {
+    Validator.extend(Float.prototype, Validator, {
         isValid: function(value) {
-            var match = (value === parseInt(value));
+            var match = (value === parseFloat(value));
 
             if (match) {
-                this.error('notInt');
+                this.error('notFloat');
                 return false;
             }
 
@@ -19,5 +19,5 @@ define([
         }
     });
 
-    return Int;
+    return Float;
 });

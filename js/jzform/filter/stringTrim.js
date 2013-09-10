@@ -1,5 +1,5 @@
 define([
-    './filter.js'
+    'jzform/filter/filter'
 ], function(Filter) {
     var StringTrim = Filter;
 

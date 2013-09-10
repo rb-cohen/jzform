@@ -1,22 +1,17 @@
 define([
-    './validator.js'
+    'jzform/validator/validator'
 ], function(Validator) {
-    var Between = function(params, messageTemplates) {
+    var LessThan = function(params, messageTemplates) {
         this.params = params;
         this.messageTemplates = messageTemplates;
     };
 
-    Validator.extend(Between.prototype, Validator, {
+    Validator.extend(LessThan.prototype, Validator, {
         isValid: function(value) {
             value = parseFloat(value);
 
-            if (value < parseFloat(this.params.min)) {
-                this.error('notBetween');
-                return false;
-            }
-
             if (value > parseFloat(this.params.max)) {
-                this.error('notBetween');
+                this.error('notLessThan');
                 return false;
             }
 
@@ -24,5 +19,5 @@ define([
         }
     });
 
-    return Between;
+    return LessThan;
 });
