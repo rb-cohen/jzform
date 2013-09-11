@@ -1,6 +1,6 @@
 ({
     baseUrl: '.',
-    out: 'jzform.min.js',
+    out: 'js/jzform.min.js',
     exclude: [
         'require',
         'underscore',
@@ -8,9 +8,10 @@
         'backbone'
     ],
     paths: {
-        'underscore' : 'empty:',
-        'jquery' : 'empty:',
-        'backbone' : 'empty:'
+        'jzform': 'js/src/jzform',
+        'underscore': 'empty:',
+        'jquery': 'empty:',
+        'backbone': 'empty:'
     },
     name: 'jzform/jzform',
     include: [
