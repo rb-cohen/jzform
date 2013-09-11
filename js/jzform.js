@@ -423,8 +423,10 @@ define('jzform/jzform',[
         },
         submit: function(e) {
             this.messages = [];
-            this.trigger('before:submit');
+            
             if (this.validate()) {
+                this.trigger('before:submit');
+                
                 var data = this.getValues();
                 this.trigger('submit', e, data);
             } else {
@@ -539,6 +541,7 @@ define('jzform/jzform',[
 
     return jzForm;
 });
+
 define('jzform/validator/validator',[
     'underscore'
 ], function(_) {
