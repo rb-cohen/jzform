@@ -8,9 +8,10 @@ define([
 
     Validator.extend(InArray.prototype, Validator, {
         isValid: function(value) {
+            value = value.toString();
             var haystack = this.params.haystack;
             for (i = 0; i < haystack.length; i++) {
-                if (value === haystack[i]) {
+                if (value == haystack[i]) {
                     return true;
                 }
             }

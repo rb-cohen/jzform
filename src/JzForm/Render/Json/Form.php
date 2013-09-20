@@ -31,21 +31,4 @@ class Form extends Fieldset {
         return $formData;
     }
 
-    public function renderInputFilter(FormInterface $form, ZfInputFilter $inputFilter = null) {
-        $data = array();
-
-        $filterRender = new InputFilter();
-        $filterData = $filterRender->render($inputFilter);
-
-        foreach ($form as $element) {
-            $name = $element->getName();
-            if (array_key_exists($name, $filterData)) {
-                $spec = $filterData[$name];
-                $data[$name] = $spec;
-            }
-        }
-
-        return $data;
-    }
-
 }

@@ -106,6 +106,11 @@ define([
         validate: function() {
             var isValid = this.isValid();
             this.getTarget().toggleClass('invalid', !isValid);
+
+            if (!isValid) {
+                console.log('isValid', isValid, this.params.validators);
+            }
+
             this.renderMessages();
             return isValid;
         },
@@ -123,7 +128,7 @@ define([
                 } else if (input.length === 1) {
                     return input.val();
                 } else {
-                    return null;
+                    return 0;
                 }
             } else {
                 return (input) ? input.val() : '';
@@ -139,7 +144,9 @@ define([
                     case 'checkbox':
                     case 'radio':
                         if (filtered instanceof Array) {
-                            var values = filtered.map(function(x){ return x.toString(); });
+                            var values = filtered.map(function(x) {
+                                return x.toString();
+                            });
                             var needle = $this.val().toString();
                             $this.prop('checked', (values.indexOf(needle) > -1));
                         } else {
