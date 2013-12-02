@@ -162,8 +162,10 @@ define([
             var $input = this.getInput();
             var type = $input.get(0).type || $input.attr('type');
             switch (type) {
+                case 'select':
                 case 'select-one':
                 case 'select-multi':
+                case 'select-multiple':
                     var html = '';
                     $.each(options, function(value, label) {
                         html += '<option value="' + value + '">' + label + '</option>';
