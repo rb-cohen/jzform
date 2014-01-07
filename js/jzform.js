@@ -182,10 +182,10 @@ define('jzform/jzformElement',[
             }
 
             var target = this.getTarget();
-            var messages = target.find('.messages');
+            var messages = target.find('> .messages');
             if (messages.length === 0) {
-                target.append('<div class="messages"></div>');
-                messages = target.find('.messages');
+                messages = $('<div class="messages"></div>');
+                target.append(messages);
             }
 
             messages.empty();
