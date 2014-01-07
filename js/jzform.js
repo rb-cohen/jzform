@@ -472,8 +472,8 @@ define('jzform/jzform',[
                     that.trigger('submit:error');
 
                     var response = JSON.parse(fail.responseText);
-                    if (response['error-message']) {
-                        that.addMessage(response['error-message']);
+                    if (response['message']) {
+                        that.addMessage(response['message']);
                         that.renderMessages();
                     } else if (response['messages']) {
                         $.each(response['messages'], function() {
