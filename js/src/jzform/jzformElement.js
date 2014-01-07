@@ -107,10 +107,6 @@ define([
             var isValid = this.isValid();
             this.getTarget().toggleClass('invalid', !isValid);
 
-            if (!isValid) {
-                console.log('isValid', isValid, this.params.validators);
-            }
-
             this.renderMessages();
             return isValid;
         },
