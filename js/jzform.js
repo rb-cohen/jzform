@@ -428,10 +428,10 @@ define('jzform/jzform',[
         },
         submit: function(e) {
             this.messages = [];
-            
+
             if (this.validate()) {
                 this.trigger('before:submit');
-                
+
                 var data = this.getValues();
                 this.trigger('submit', e, data);
             } else {
@@ -459,14 +459,7 @@ define('jzform/jzform',[
 
             var saveDefaults = {
                 success: function() {
-                    that.trigger('submit:success');
-
-                    if (options.isNew) {
-                        Copia.notice('success', 'Successfully created __model__', 10);
-                        that.reset();
-                    } else {
-                        Copia.notice('success', 'Successfully updated __model__', 10);
-                    }
+                    that.trigger('submit:success', model, options);
                 },
                 error: function(model, fail) {
                     that.trigger('submit:error');
@@ -507,7 +500,7 @@ define('jzform/jzform',[
             });
         },
         addMessage: function(message) {
-            if (typeof(this.messages) !== 'array') {
+            if (typeof (this.messages) !== 'array') {
                 this.messages = [];
             }
 
