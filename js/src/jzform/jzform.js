@@ -81,7 +81,7 @@ define([
                     that.trigger('submit:success', model, options);
                 },
                 error: function(model, fail) {
-                    that.trigger('submit:error');
+                    that.trigger('submit:error', model, fail);
 
                     var response = JSON.parse(fail.responseText);
                     if (response['message']) {
@@ -93,9 +93,6 @@ define([
                         });
 
                         that.renderMessages();
-                    } else {
-                        Copia.notice('fail', 'Failed saving __model__');
-                        console.log('response', response);
                     }
                 }
             };
