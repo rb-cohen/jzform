@@ -438,10 +438,10 @@ define('jzform/jzform',[
                 e.preventDefault();
             }
         },
-        bindModel: function(model) {
+        bindModel: function(model, submitOptions) {
             this.model = model;
             this.bindModelPopulate(model);
-            this.bindModelSubmit(model);
+            this.bindModelSubmit(model, submitOptions);
         },
         bindModelPopulate: function(model) {
             this.listenTo(model, 'change', function() {
@@ -449,39 +449,52 @@ define('jzform/jzform',[
             });
             this.populate(model.toJSON());
         },
-        bindModelSubmit: function(model, options, saveOptions) {
+        bindModelSubmit: function(model, options) {
             var that = this;
             var defaults = {
+                saveOptions: {},
                 method: 'save',
                 isNew: model.isNew()
             };
             options = $.extend(defaults, options);
 
-            var saveDefaults = {
-                success: function() {
-                    that.trigger('submit:success', model, options);
-                },
-                error: function(model, fail) {
-                    that.trigger('submit:error', model, fail);
+            var saveCallback = options.saveOptions.save;
+            var errorCallback = options.saveOptions.error || this.parseErrorMessages;
 
-                    var response = JSON.parse(fail.responseText);
-                    if (response['message']) {
-                        that.addMessage(response['message']);
-                        that.renderMessages();
-                    } else if (response['messages']) {
-                        $.each(response['messages'], function() {
-                            that.addMessage(this);
-                        });
-
-                        that.renderMessages();
-                    }
+            var saveOptions = options.saveOptions;
+            saveOptions.success = function(model) {
+                that.trigger('submit:success', model, options);
+                if (saveCallback) {
+                    saveCallback.call(that, model, options);
                 }
             };
-            saveOptions = $.extend(saveDefaults, saveOptions);
+
+            saveOptions.error = function(model, fail) {
+                that.trigger('submit:error', model, fail);
+                if (errorCallback) {
+                    errorCallback.call(that, model, fail);
+                }
+            };
+
             this.listenTo(this, 'submit', function(e) {
                 e.preventDefault();
-                model[options.method].call(model, this.getValues(), saveOptions);
+                var values = this.getValues();
+                model[options.method].call(model, values, saveOptions);
             });
+        },
+        parseErrorMessages: function(model, fail) {
+            var that = this;
+            var response = JSON.parse(fail.responseText);
+            if (response['message']) {
+                that.addMessage(response['message']);
+                that.renderMessages();
+            } else if (response['messages']) {
+                $.each(response['messages'], function() {
+                    that.addMessage(this);
+                });
+
+                that.renderMessages();
+            }
         },
         renderMessages: function() {
             var target = this.$el;
