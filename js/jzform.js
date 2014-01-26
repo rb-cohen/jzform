@@ -453,6 +453,7 @@ define('jzform/jzform',[
             var that = this;
             var defaults = {
                 saveOptions: {},
+                exclude: [],
                 method: 'save',
                 isNew: model.isNew()
             };
@@ -479,7 +480,9 @@ define('jzform/jzform',[
             this.listenTo(this, 'submit', function(e) {
                 e.preventDefault();
                 var values = this.getValues();
-                model[options.method].call(model, values, saveOptions);
+                var valuesToSave = _.omit(values, options.exclude);
+
+                model[options.method].call(model, valuesToSave, saveOptions);
             });
         },
         parseErrorMessages: function(model, fail) {
