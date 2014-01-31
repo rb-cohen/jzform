@@ -4,7 +4,7 @@ define([
     'jquery',
     'backbone'
 ], function(require, _, $, Backbone) {
-    Element = function(form, params) {
+    var Element = function(form, params) {
         var defaults = {
             filters: [],
             validators: []
@@ -13,9 +13,8 @@ define([
         this.params = $.extend(defaults, params);
         this.initialize();
     };
-    Element.extend = Backbone.View.extend;
-    $.extend(Element.prototype, Backbone.Events);
-    $.extend(Element.prototype, {
+
+    _.extend(Element.prototype, Backbone.Events, {
         input: null,
         filters: null,
         validators: null,
