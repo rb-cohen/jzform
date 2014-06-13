@@ -70,6 +70,7 @@ class ValidatorMap {
             ),
         )
     );
+    protected $instanceCache = array();
 
     public function mapName($validator) {
         return $this->getName($validator);
@@ -95,9 +96,10 @@ class ValidatorMap {
     }
 
     public function mapMessages($validator) {
-        $name = $this->getName($validator);
         if ($validator instanceof ValidatorInterface) {
             return $validator->getMessageTemplates();
+        } elseif ($instance = $this->getValidatorInstanceForMeta($validator)) {
+            return $instance->getMessageTemplates();
         }
 
         return array();
@@ -120,6 +122,19 @@ class ValidatorMap {
         }
 
         throw new Exception('Unknown validator ' . $name);
+    }
+
+    protected function getValidatorInstanceForMeta($validator) {
+        if (array_key_exists($validator, $this->instanceCache)) {
+            return $this->instanceCache[$validator];
+}
+
+        if (array_key_exists($validator, $this->names)) {
+            $this->instanceCache[$validator] = new $validator;
+            return $this->instanceCache[$validator];
+        }
+
+        return false;
     }
 
 }
