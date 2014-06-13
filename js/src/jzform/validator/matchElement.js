@@ -4,8 +4,7 @@ define([
     var MatchElement = function(params, messageTemplates) {
         this.params = params;
         this.messageTemplates = messageTemplates;
-
-        this.listenForTokenChange();
+        this.firstValidation = true;
     };
 
     Validator.extend(MatchElement.prototype, Validator, {
@@ -26,6 +25,11 @@ define([
             if (!token) {
                 this.error('missingToken');
                 return false;
+            }
+
+            if (this.firstValidation) {
+                this.listenForTokenChange();
+                this.firstValidation = false;
             }
 
             var values = context.getValues();
