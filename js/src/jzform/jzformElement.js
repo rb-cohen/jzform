@@ -153,7 +153,7 @@ define([
                 }
             });
         },
-        setOptions: function(options) {
+        setOptions: function (options) {
             var $input = this.getInput();
             var type = $input.get(0).type || $input.attr('type');
             switch (type) {
@@ -162,13 +162,27 @@ define([
                 case 'select-multi':
                 case 'select-multiple':
                     var html = '';
-                    $.each(options, function(value, label) {
-                        html += '<option value="' + value + '">' + label + '</option>';
+
+                    var optionsArray = this.normalizeOptions(options);
+                    _.each(optionsArray, function (option) {
+                        html += '<option value="' + option.value + '">' + option.label + '</option>';
                     });
 
                     $input.html(html);
                     break;
             }
+        },
+        normalizeOptions: function (options) {
+            if (_.isObject(options)) {
+                var normal = [];
+                _.each(options, function (label, value) {
+                    normal.push({label: label, value: value});
+                });
+                
+                return normal;
+            }
+
+            return options;
         },
         renderMessages: function() {
             if (!this.params.renderMessages) {
