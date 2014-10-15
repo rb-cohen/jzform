@@ -173,7 +173,7 @@ define([
             }
         },
         normalizeOptions: function (options) {
-            if (_.isObject(options)) {
+            if (_.isArray(options) === false && _.isObject(options)) {
                 var normal = [];
                 _.each(options, function (label, value) {
                     normal.push({label: label, value: value});
