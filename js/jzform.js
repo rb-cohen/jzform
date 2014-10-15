@@ -154,7 +154,7 @@ define('jzform/jzformElement',[
                 }
             });
         },
-        setOptions: function(options) {
+        setOptions: function (options) {
             var $input = this.getInput();
             var type = $input.get(0).type || $input.attr('type');
             switch (type) {
@@ -163,13 +163,27 @@ define('jzform/jzformElement',[
                 case 'select-multi':
                 case 'select-multiple':
                     var html = '';
-                    $.each(options, function(value, label) {
-                        html += '<option value="' + value + '">' + label + '</option>';
+
+                    var optionsArray = this.normalizeOptions(options);
+                    _.each(optionsArray, function (option) {
+                        html += '<option value="' + option.value + '">' + option.label + '</option>';
                     });
 
                     $input.html(html);
                     break;
             }
+        },
+        normalizeOptions: function (options) {
+            if (_.isObject(options)) {
+                var normal = [];
+                _.each(options, function (label, value) {
+                    normal.push({label: label, value: value});
+                });
+                
+                return normal;
+            }
+
+            return options;
         },
         renderMessages: function() {
             if (!this.params.renderMessages) {
@@ -791,8 +805,7 @@ define('jzform/validator/matchElement',[
     var MatchElement = function(params, messageTemplates) {
         this.params = params;
         this.messageTemplates = messageTemplates;
-
-        this.listenForTokenChange();
+        this.firstValidation = true;
     };
 
     Validator.extend(MatchElement.prototype, Validator, {
@@ -813,6 +826,11 @@ define('jzform/validator/matchElement',[
             if (!token) {
                 this.error('missingToken');
                 return false;
+            }
+
+            if (this.firstValidation) {
+                this.listenForTokenChange();
+                this.firstValidation = false;
             }
 
             var values = context.getValues();
