@@ -3,8 +3,8 @@ define([
     'underscore',
     'jquery',
     'backbone'
-], function(require, _, $, Backbone) {
-    var Element = function(form, params) {
+], function (require, _, $, Backbone) {
+    var Element = function (form, params) {
         var defaults = {
             filters: [],
             validators: []
@@ -19,7 +19,7 @@ define([
         filters: null,
         validators: null,
         messages: [],
-        initialize: function() {
+        initialize: function () {
             this._events = {};
             this.listenTo(this.form, 'before:close', this.destroy);
 
@@ -27,30 +27,30 @@ define([
             this.prepareValidators();
             this.getInput();
         },
-        prepareFilters: function() {
+        prepareFilters: function () {
             var that = this;
             this.filters = [];
-            $.each(this.params.filters, function(index, params) {
+            $.each(this.params.filters, function (index, params) {
                 var name = 'jzform/filter/' + params.name;
-                require([name], function(Filter) {
+                require([name], function (Filter) {
                     var filter = new Filter(params.options);
                     that.filters.push(filter);
                 });
             });
         },
-        prepareValidators: function() {
+        prepareValidators: function () {
             var that = this;
             this.validators = [];
-            $.each(this.params.validators, function(index, params) {
+            $.each(this.params.validators, function (index, params) {
                 var name = 'jzform/validator/' + params.name;
                 params.options.element = that;
-                require([name], function(Validator) {
+                require([name], function (Validator) {
                     var validator = new Validator(params.options, params.messages);
                     that.validators.push(validator);
                 });
             });
         },
-        getInput: function() {
+        getInput: function () {
             if (!this.input) {
                 var selector = '*[name="' + this.params.name + '"]';
                 var $elements = this.form.$el.find(selector);
@@ -63,24 +63,24 @@ define([
 
             return this.input;
         },
-        setInput: function(input) {
+        setInput: function (input) {
             this.input = input;
             // bind events if not already bound            
             if (this.input && !this.input.data('events-bound')) {
                 this.bindEvents(this.input);
             }
         },
-        bindEvents: function(input) {
+        bindEvents: function (input) {
             var that = this;
             input.data('events-bound', 1);
-            input.bind('focus blur change keydown keyup paste', function(e) {
+            input.bind('focus blur change keydown keyup paste', function (e) {
                 that.trigger(e.type, e);
                 that.form.trigger(e.type + ':' + that.params.name, that);
             });
             //this.listenTo(this, 'change', this.filter);
             this.listenTo(this, 'change', this.validate);
         },
-        filter: function() {
+        filter: function () {
             if (this.params.type === 'file') {
                 return;
             }
@@ -94,29 +94,29 @@ define([
 
             return true;
         },
-        filterValue: function(value) {
+        filterValue: function (value) {
             var filteredValue = value;
-            $.each(this.filters, function(index, filter) {
+            $.each(this.filters, function (index, filter) {
                 filteredValue = filter.filter(filteredValue);
             });
 
             return filteredValue;
         },
-        validate: function() {
+        validate: function () {
             var isValid = this.isValid();
             this.getTarget().toggleClass('invalid', !isValid);
 
             this.renderMessages();
             return isValid;
         },
-        getValue: function() {
+        getValue: function () {
             var input = this.getInput();
 
             if (input && input.filter('[type=radio],[type=checkbox]').length > 0) {
                 input = input.filter(':checked');
                 if (input.length > 1) {
                     var values = [];
-                    input.each(function(index, element) {
+                    input.each(function (index, element) {
                         values.push($(element).val());
                     });
                     return values;
@@ -129,17 +129,17 @@ define([
                 return (input) ? input.val() : '';
             }
         },
-        setValue: function(value) {
+        setValue: function (value) {
             var input = this.getInput();
             var filtered = this.filterValue(value);
 
-            input.each(function() {
+            input.each(function () {
                 var $this = $(this);
                 switch ($this.attr('type')) {
                     case 'checkbox':
                     case 'radio':
                         if (filtered instanceof Array) {
-                            var values = filtered.map(function(x) {
+                            var values = filtered.map(function (x) {
                                 return x.toString();
                             });
                             var needle = $this.val().toString();
@@ -178,13 +178,19 @@ define([
                 _.each(options, function (label, value) {
                     normal.push({label: label, value: value});
                 });
-                
+
                 return normal;
+            } else if (_.isArray(options)) {
+                _.each(options, function (option, key) {
+                    if (_.isObject(option) === false) {
+                        options[key] = {label: option, value: key};
+                    }
+                });
             }
 
             return options;
         },
-        renderMessages: function() {
+        renderMessages: function () {
             if (!this.params.renderMessages) {
                 return;
             }
@@ -197,16 +203,16 @@ define([
             }
 
             messages.empty();
-            $.each(this.messages, function(index, message) {
+            $.each(this.messages, function (index, message) {
                 messages.append('<p>' + message + '</p>');
             });
         },
-        isValid: function() {
+        isValid: function () {
             this.messages = [];
             var currentValue = this.getValue();
             var valid = true;
             var that = this;
-            $.each(this.validators, function(index, validator) {
+            $.each(this.validators, function (index, validator) {
                 valid = (valid && validator.isValid(currentValue, that.form));
                 if (!valid && validator.message) {
                     that.addMessage(validator.message);
@@ -214,14 +220,14 @@ define([
             });
             return valid;
         },
-        addMessage: function(message) {
+        addMessage: function (message) {
             this.messages.push(message);
         },
-        getTarget: function() {
+        getTarget: function () {
             var input = this.getInput();
             return (input) ? input.parent('div.element, fieldset') : this.form.$el;
         },
-        destroy: function() {
+        destroy: function () {
             this.trigger('before:destroy');
             this.stopListening();
             this.trigger('destroy');
