@@ -35,6 +35,7 @@
         'jzform/validator/validator',
         'jzform/filter/boolean',
         'jzform/filter/filter',
+        'jzform/filter/float',
         'jzform/filter/int',
         'jzform/filter/stringToLower',
         'jzform/filter/stringToUpper',
