@@ -12,6 +12,7 @@ class FilterMap {
         'Zend\\Filter\\StringTrim' => 'stringTrim',
         'Zend\\Filter\\StringToLower' => 'stringToLower',
         'Zend\\Filter\\StringToUpper' => 'stringToUpper',
+        'Zend\\I18n\\Filter\\NumberParse' => 'float'
     );
     public $options = array(
     );
