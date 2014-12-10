@@ -21,7 +21,7 @@ define([
         messages: [],
         initialize: function () {
             this._events = {};
-            this.listenTo(this.form, 'before:close', this.destroy);
+            this.listenTo(this.form, 'before:destroy', this.destroy);
 
             this.prepareFilters();
             this.prepareValidators();
@@ -72,13 +72,20 @@ define([
         },
         bindEvents: function (input) {
             var that = this;
+            var events = 'focus.jzform blur.jzform change.jzform keydown.jzform keyup.jzform paste.jzform';
+
             input.data('events-bound', 1);
-            input.bind('focus blur change keydown keyup paste', function (e) {
+            input.bind(events, function (e) {
                 that.trigger(e.type, e);
                 that.form.trigger(e.type + ':' + that.params.name, that);
             });
-            //this.listenTo(this, 'change', this.filter);
+
             this.listenTo(this, 'change', this.validate);
+
+            this.listenTo(this, 'before:destroy', function () {
+                input.data('events-bound', 0);
+                input.unbind(events);
+            });
         },
         filter: function () {
             if (this.params.type === 'file') {
