@@ -8,6 +8,7 @@ class ValidatorMap {
 
     public $names = array(
         'Zend\I18n\Validator\Alnum' => 'alnum',
+        'Zend\I18n\Validator\IsInt' => 'int',
         'Zend\I18n\Validator\Int' => 'int',
         'Zend\I18n\Validator\Float' => 'float',
         'Zend\\Validator\\Between' => 'between',
