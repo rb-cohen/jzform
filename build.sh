@@ -1,6 +1,12 @@
 #!/bin/bash
 
-command -v nodejs >/dev/null 2>&1 || { echo >&2 "Cannot find nodejs.  Aborting."; exit 1; }
+if [ -x "$(command -v nodejs)" ]; then
+  NODECOMMAND=nodejs
+elif [ -x "$(command -v node)" ]; then
+  NODECOMMAND=node
+else
+  echo >&2 "Cannot find nodejs or node.  Aborting."; exit 1;
+fi
 
 fg_red="$(tput setaf 1)"
 fg_green="$(tput setaf 2)"
@@ -13,13 +19,13 @@ case "$1" in
 "build")
 
         if [ -z "$2" ] || [ "$2" == "production" ]; then
-        nodejs ${DIR}/r.js -o ${DIR}/build.js out=${DIR}/js/jzform.min.js 
+        ${NODECOMMAND} ${DIR}/r.js -o ${DIR}/build.js out=${DIR}/js/jzform.min.js
             if [ $? != "0" ]; then
                 exit $?;
             fi
         fi
         if [ -z "$2" ] || [ "$2" == "development" ]; then
-        nodejs ${DIR}/r.js -o ${DIR}/build.js optimize=none out=${DIR}/js/jzform.js
+        ${NODECOMMAND} ${DIR}/r.js -o ${DIR}/build.js optimize=none out=${DIR}/js/jzform.js
             if [ $? != "0" ]; then
                 exit $?;
             fi
@@ -34,10 +40,10 @@ case "$1" in
 
 
         if [ -z "$2" ] || [ "$2" == "production" ]; then
-            nodejs ${DIR}/r.js -o ${DIR}/build.js out=${DIR}/js/jzform.min.js > /dev/null 
+            ${NODECOMMAND} ${DIR}/r.js -o ${DIR}/build.js out=${DIR}/js/jzform.min.js > /dev/null
         fi
         if [ -z "$2" ] || [ "$2" == "development" ]; then
-            nodejs ${DIR}/r.js -o ${DIR}/build.js optimize=none out=${DIR}/js/jzform.js  > /dev/null 
+            ${NODECOMMAND} ${DIR}/r.js -o ${DIR}/build.js optimize=none out=${DIR}/js/jzform.js  > /dev/null
         fi
 
         if [ $? == '0' ]; then
